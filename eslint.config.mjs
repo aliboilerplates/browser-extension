@@ -38,6 +38,7 @@ export default tseslint.config(
         "error",
         { allowNumber: true },
       ],
+      "@typescript-eslint/no-misused-promises": "off",
       "@typescript-eslint/array-type": ["error", { default: "array" }],
       "@typescript-eslint/consistent-type-definitions": "off"
     },

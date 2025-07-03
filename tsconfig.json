@@ -11,7 +11,7 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "esModuleInterop": true,
-    "types": ["vite/client", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals", "chrome"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
