@@ -1,4 +1,6 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("Message received:", message);
-  sendResponse({ text: "Background" });
+import browser from "webextension-polyfill";
+
+browser.runtime.onMessage.addListener(async (msg: unknown) => {
+  console.log("Message recievend in backend Script", msg);
+  return { text: "Message from Background Script" };
 });

@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import browser from "webextension-polyfill";
+
+interface Message {
+  text: string;
+}
 
 export const Popup: React.FC = () => {
   const [response, setResponse] = useState<string>("");
 
   async function sendMessageToBackgroundScript() {
-    await chrome.runtime.sendMessage({ text: "Popup" });
-  }
-
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((msg: { text: string }) => {
-      console.log("Message received From Background:", msg);
-      setResponse(msg.text);
+    const response = await browser.runtime.sendMessage<Message, Message>({
+      text: "Popup",
     });
-  }, []);
+
+    setResponse(response.text);
+  }
 
   return (
     <div className="p-4">
