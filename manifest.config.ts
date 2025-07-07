@@ -19,12 +19,12 @@ export default defineManifest({
 
   content_scripts: [
     {
-      js: ["src/content/main.tsx"],
+      js: ["src/content/index.ts"],
       matches: ["https://*/*"],
     },
   ],
 
   background: {
-    service_worker: "src/background/background.ts",
+    service_worker: "src/background/index.ts",
   },
 });
