@@ -1,13 +1,13 @@
 import { useState } from "react";
 import reactLogo from "@/assets/react.svg";
 import wxtLogo from "/wxt.svg";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="min-w-sm bg-base-100 gap-4 flex flex-col items-center content-center">
+    <div className="min-w-sm gap-4 flex flex-col items-center content-center">
       <div className="">
         <a href="https://wxt.dev" target="_blank">
           <img src={wxtLogo} className="logo" alt="WXT logo" />
