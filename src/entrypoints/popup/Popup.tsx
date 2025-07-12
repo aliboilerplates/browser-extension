@@ -1,7 +1,37 @@
 import { Camera, Crop, ScanLine, Download } from "lucide-react";
 import { ActionCard } from "./components/ActionCard";
+import { sendRuntimeMessage } from "@/utils/message.utils";
+import {
+  DownloadLastScreenShotResponse,
+  ScreenshotMessage,
+} from "@/shared/interfaces/messages.interface";
+import { Button } from "@/components/ui/Button";
+import { logger } from "@/lib/logger";
 
 export function Popup() {
+  const [isLastScreenShotFound, setIsLastScreenShotFound] =
+    useState<boolean>(true);
+
+  const [isScreenShotDownloading, setIsScreenShotDownloading] =
+    useState<boolean>(false);
+
+  async function handleDownloadLast() {
+    setIsScreenShotDownloading(true);
+    try {
+      const screenShot =
+        await sendRuntimeMessage<DownloadLastScreenShotResponse>({
+          type: "downloadLastScreenShot",
+        });
+      if (screenShot === null) {
+        setIsLastScreenShotFound(false);
+      }
+      console.log(screenShot);
+    } catch (error) {
+      logger.error("Failed to downlaod last screenshot", error);
+    } finally {
+      setIsScreenShotDownloading(false);
+    }
+  }
   return (
     <div className="w-80 p-5 rounded-2xl bg-gradient-to-br from-[#fdfdfd] to-[#f2f4f7] shadow-xl border border-gray-200 space-y-5">
       <header className="text-center space-y-1">
@@ -16,7 +46,7 @@ export function Popup() {
           label="Visible"
           icon={<Camera className="w-5 h-5" color="black" />}
           onClick={() => {
-            handleScreenshot("visible");
+            handleScreenshot("captureVisible");
           }}
           color="bg-primary"
         />
@@ -24,7 +54,7 @@ export function Popup() {
           label="Full"
           icon={<ScanLine className="w-5 h-5" color="black" />}
           onClick={() => {
-            handleScreenshot("full");
+            handleScreenshot("captureFull");
           }}
           color="bg-secondary"
         />
@@ -32,42 +62,37 @@ export function Popup() {
           label="Select"
           icon={<Crop className="w-5 h-5" color="black" />}
           onClick={() => {
-            handleScreenshot("select");
+            handleScreenshot("captureSelect");
           }}
           color="bg-accent"
         />
       </div>
 
       <div className="border-t border-gray-200 pt-4">
-        <button
+        <Button
           onClick={handleDownloadLast}
-          className="btn btn-neutral w-full gap-2"
+          shape="neutral"
+          className="w-full"
+          disabled={!isLastScreenShotFound || isScreenShotDownloading}
         >
-          <Download className="w-4 h-4" />
-          Download Last
-        </button>
+          {isLastScreenShotFound ? (
+            <span className="flex gap-2">
+              <Download className="w-4 h-4" />
+              Download Last
+            </span>
+          ) : (
+            <span className="text-black opacity-60">
+              😞 No screenshot found
+            </span>
+          )}
+        </Button>
       </div>
     </div>
   );
 }
 
-// Storage logic
-function handleScreenshot(type: "visible" | "full" | "select") {
-  console.log(`Take ${type} screenshot`);
-  const dummyData = "data:image/png;base64,iVBORw0..."; // ← use actual captured base64
-  void browser.storage.local.set({ lastScreenshot: dummyData });
-}
-
-function handleDownloadLast() {
-  browser.storage.local.get("lastScreenshot", (result) => {
-    const dataUrl = result.lastScreenshot as string | undefined;
-    if (dataUrl) {
-      const a = document.createElement("a");
-      a.href = dataUrl;
-      a.download = "screenshot.png";
-      a.click();
-    } else {
-      alert("No screenshot found.");
-    }
-  });
+function handleScreenshot(
+  type: Exclude<ScreenshotMessage["type"], "downloadLastScreenShot">,
+) {
+  void sendRuntimeMessage({ type });
 }
