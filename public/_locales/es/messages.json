@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "Plantilla WXT",
+    "description": "Nombre predeterminado de la extension"
+  },
+  "extensionDescription": {
+    "message": "Plantilla de extension lista para produccion",
+    "description": "Descripcion predeterminada de la extension"
+  }
+}

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  min-width: 22rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
