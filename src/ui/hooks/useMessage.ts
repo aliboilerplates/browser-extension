@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { sendMessage } from "@/core/messaging";
+import { sendMessage } from "@/core/messaging/sendMessage";
 import type {
   AppMessageType,
   RequestPayload,
