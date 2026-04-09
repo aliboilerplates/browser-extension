@@ -1,21 +1,34 @@
 export {
-  MESSAGE_TARGET,
-  getContract,
-  messageContracts,
   type AppMessageType,
   type MessageTarget,
+  type RequiresResponse,
   type RequestPayload,
   type ResponsePayload,
   type RuntimeRequest,
   type RuntimeResponse,
 } from "./contracts";
 export {
-  createRuntimeMessageListener,
+  BACKGROUND_MESSAGE,
+  CONTENT_MESSAGE,
+  MESSAGE_TARGET,
+  OFFSCREEN_MESSAGE,
+} from "./messageConstants";
+export {
+  getMessageTarget,
+  isKnownMessageType,
+  requiresResponse,
+} from "./messageMetadata";
+export { createRuntimeMessageListener } from "./createMessageListener";
+export { sendMessage } from "./sendMessage";
+export {
+  sendMessageToActiveTab,
+  sendMessageToTab,
+  type SendContentMessageOptions,
+} from "./contentTransport";
+export {
   isBackgroundMessage,
   isContentMessage,
   isOffscreenMessage,
-} from "./listener";
-export { sendRuntimeMessage } from "./runtime";
-export { sendMessageToActiveTab, sendMessageToTab, type SendContentMessageOptions } from "./contentTransport";
-export { MessagingTimeoutError, toRuntimeFailure } from "./errors";
-
+  isRuntimeRequestForTarget,
+  toRuntimeFailure,
+} from "./messageUtils";

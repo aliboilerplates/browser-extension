@@ -1,13 +1,14 @@
 import { Trash2 } from "lucide-react";
-import { sendRuntimeMessage } from "@/core/messaging";
-import { settingsStorage } from "@/core/storage/shared";
+import { sendMessage } from "@/core/messaging";
+import { settingsStorage } from "@/core/storage/storageItems";
 import { demoNotesStorage } from "@/shared/demo-notes.storage";
 import { useStorageItem } from "@/ui/hooks/useStorageItem";
 import { usePopupStore } from "@/ui/stores/usePopupStore";
 
 export function DemoNotesPanel() {
   const { value: notes, loading } = useStorageItem(demoNotesStorage);
-  const { value: settings, update: updateSettings } = useStorageItem(settingsStorage);
+  const { value: settings, update: updateSettings } =
+    useStorageItem(settingsStorage);
   const query = usePopupStore((state) => state.query);
   const setQuery = usePopupStore((state) => state.setQuery);
 
@@ -16,20 +17,21 @@ export function DemoNotesPanel() {
   );
 
   async function handleSubmit(formData: FormData) {
-    const text = String(formData.get("text") ?? "").trim();
+    const textField = formData.get("text");
+    const text = typeof textField === "string" ? textField.trim() : "";
 
     if (!text) {
       return;
     }
 
-    await sendRuntimeMessage("demoNotes/createNote", {
+    await sendMessage("demoNotes/createNote", {
       text,
       source: "popup",
     });
   }
 
   async function handleDelete(id: string) {
-    await sendRuntimeMessage("demoNotes/deleteNote", { id });
+    await sendMessage("demoNotes/deleteNote", { id });
   }
 
   return (
@@ -93,7 +95,7 @@ export function DemoNotesPanel() {
         <ul className="space-y-2">
           {filteredNotes.slice(0, settings.maxNotes).map((note) => (
             <li
-              className="rounded-box border border-base-300 bg-base-200 p-3"
+              className="rounded-box border-base-300 bg-base-200 border p-3"
               key={note.id}
             >
               <div className="flex items-start justify-between gap-3">
@@ -119,4 +121,3 @@ export function DemoNotesPanel() {
     </section>
   );
 }
-

@@ -3,7 +3,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { settingsStorage } from "@/core/storage/shared";
+import { settingsStorage } from "@/core/storage/storageItems";
 import { useStorageItem } from "./useStorageItem";
 
 describe("useStorageItem", () => {

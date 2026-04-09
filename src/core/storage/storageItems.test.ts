@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { onboardingShownStorage, settingsStorage } from "./shared";
+import { onboardingShownStorage, settingsStorage } from "./storageItems";
 
 describe("shared storage", () => {
   beforeEach(() => {

@@ -1,148 +1,64 @@
-export const MESSAGE_TARGET = {
-  background: "BACKGROUND",
-  content: "CONTENT",
-  offscreen: "OFFSCREEN",
-} as const;
+import type { BackgroundMessageMap } from "./definitions/backgroundMessages";
+import type { ContentMessageMap } from "./definitions/contentMessages";
+import { MESSAGE_TARGET } from "./messageConstants";
+import type { OffscreenMessageMap } from "./definitions/offscreenMessages";
 
 export type MessageTarget =
   (typeof MESSAGE_TARGET)[keyof typeof MESSAGE_TARGET];
 
-interface BaseContract<
-  TTarget extends MessageTarget,
-  TRequest,
-  TResponse,
-  TRequiresResponse extends boolean,
-> {
-  target: TTarget;
-  requiresResponse: TRequiresResponse;
-  defaultTimeoutMs?: number;
-  __request?: TRequest;
-  __response?: TResponse;
+export interface MessageTargetMap {
+  [MESSAGE_TARGET.background]: BackgroundMessageMap;
+  [MESSAGE_TARGET.content]: ContentMessageMap;
+  [MESSAGE_TARGET.offscreen]: OffscreenMessageMap;
 }
 
-export function defineMessage<
-  TTarget extends MessageTarget,
-  TRequest,
-  TResponse = void,
->(config: {
-  target: TTarget;
-  requiresResponse: true;
-  defaultTimeoutMs?: number;
-}): BaseContract<TTarget, TRequest, TResponse, true>;
-
-export function defineMessage<TTarget extends MessageTarget, TRequest>(config: {
-  target: TTarget;
-  requiresResponse: false;
-  defaultTimeoutMs?: number;
-}): BaseContract<TTarget, TRequest, void, false>;
-
-export function defineMessage(config: {
-  target: MessageTarget;
+export interface MessageConfig {
   requiresResponse: boolean;
-  defaultTimeoutMs?: number;
-}) {
-  return config;
 }
 
-export const messageContracts = {
-  "core/getSettings": defineMessage<
-    typeof MESSAGE_TARGET.background,
-    undefined,
-    { theme: "light" | "dark" | "system"; maxNotes: number }
-  >({
-    target: MESSAGE_TARGET.background,
-    requiresResponse: true,
-    defaultTimeoutMs: 3_000,
-  }),
-  "core/updateSettings": defineMessage<
-    typeof MESSAGE_TARGET.background,
-    Partial<{ theme: "light" | "dark" | "system"; maxNotes: number }>,
-    { theme: "light" | "dark" | "system"; maxNotes: number }
-  >({
-    target: MESSAGE_TARGET.background,
-    requiresResponse: true,
-    defaultTimeoutMs: 3_000,
-  }),
-  "demoNotes/getNotes": defineMessage<
-    typeof MESSAGE_TARGET.background,
-    undefined,
-    {
-      id: string;
-      text: string;
-      source: "popup" | "content" | "context-menu";
-      createdAt: number;
-    }[]
-  >({
-    target: MESSAGE_TARGET.background,
-    requiresResponse: true,
-    defaultTimeoutMs: 3_000,
-  }),
-  "demoNotes/createNote": defineMessage<
-    typeof MESSAGE_TARGET.background,
-    { text: string; source: "popup" | "content" | "context-menu" },
-    {
-      id: string;
-      text: string;
-      source: "popup" | "content" | "context-menu";
-      createdAt: number;
-    }
-  >({
-    target: MESSAGE_TARGET.background,
-    requiresResponse: true,
-    defaultTimeoutMs: 3_000,
-  }),
-  "demoNotes/deleteNote": defineMessage<
-    typeof MESSAGE_TARGET.background,
-    { id: string }
-  >({
-    target: MESSAGE_TARGET.background,
-    requiresResponse: false,
-  }),
-  "demoNotes/saveSelectedText": defineMessage<
-    typeof MESSAGE_TARGET.background,
-    { text: string }
-  >({
-    target: MESSAGE_TARGET.background,
-    requiresResponse: false,
-  }),
-  "content/showToast": defineMessage<
-    typeof MESSAGE_TARGET.content,
-    { message: string }
-  >({
-    target: MESSAGE_TARGET.content,
-    requiresResponse: false,
-  }),
-  "offscreen/ping": defineMessage<
-    typeof MESSAGE_TARGET.offscreen,
-    undefined,
-    { ok: true }
-  >({
-    target: MESSAGE_TARGET.offscreen,
-    requiresResponse: true,
-    defaultTimeoutMs: 3_000,
-  }),
-} as const;
+export type MessageConfigMap<TMap> = {
+  [K in keyof TMap]: MessageConfig;
+};
 
-export type AppMessageMap = typeof messageContracts;
-export type AppMessageType = keyof AppMessageMap;
-export type MessageTypeForTarget<TTarget extends MessageTarget> = {
-  [K in AppMessageType]: AppMessageMap[K]["target"] extends TTarget ? K : never;
-}[AppMessageType];
+export type AppMessageType = {
+  [TTarget in MessageTarget]: Extract<keyof MessageTargetMap[TTarget], string>;
+}[MessageTarget];
+
+export type MessageTypeForTarget<TTarget extends MessageTarget> = Extract<
+  keyof MessageTargetMap[TTarget],
+  AppMessageType
+>;
+
+type MessageDefinition<TType extends AppMessageType> = {
+  [TTarget in MessageTarget]: TType extends keyof MessageTargetMap[TTarget]
+    ? MessageTargetMap[TTarget][TType]
+    : never;
+}[MessageTarget];
 
 export type RequestPayload<TType extends AppMessageType> =
-  AppMessageMap[TType] extends { __request?: infer TRequest }
-    ? TRequest
-    : never;
+  MessageDefinition<TType>["request"];
 
 export type ResponsePayload<TType extends AppMessageType> =
-  AppMessageMap[TType] extends { __response?: infer TResponse }
-    ? TResponse
-    : never;
+  MessageDefinition<TType>["response"];
 
-export type TargetForMessage<TType extends AppMessageType> =
-  AppMessageMap[TType]["target"];
+export type TargetForMessage<TType extends AppMessageType> = {
+  [TTarget in MessageTarget]: TType extends keyof MessageTargetMap[TTarget]
+    ? TTarget
+    : never;
+}[MessageTarget];
+
 export type RequiresResponse<TType extends AppMessageType> =
-  AppMessageMap[TType]["requiresResponse"];
+  TType extends keyof BackgroundMessageMap
+    ? BackgroundMessageMap[TType] extends never
+      ? never
+      : TType extends "demoNotes/deleteNote" | "demoNotes/saveSelectedText"
+        ? false
+        : true
+    : TType extends keyof ContentMessageMap
+      ? false
+      : TType extends keyof OffscreenMessageMap
+        ? true
+        : never;
 
 export interface RuntimeRequest<TType extends AppMessageType = AppMessageType> {
   type: TType;
@@ -165,11 +81,3 @@ export interface RuntimeFailure {
 export type RuntimeResponse<TType extends AppMessageType> =
   | RuntimeSuccess<TType>
   | RuntimeFailure;
-
-export function isKnownMessageType(value: unknown): value is AppMessageType {
-  return typeof value === "string" && value in messageContracts;
-}
-
-export function getContract<TType extends AppMessageType>(type: TType) {
-  return messageContracts[type];
-}

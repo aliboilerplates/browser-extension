@@ -2,8 +2,8 @@ import { defineBackground } from "wxt/utils/define-background";
 import { browser } from "wxt/browser";
 import { supportsContextMenus } from "@/core/browser/capabilities";
 import { sendMessageToActiveTab } from "@/core/messaging";
-import { backgroundMessageListener } from "@/core/messaging/backgroundHandlers";
 import { demoNotesStorage } from "@/shared/demo-notes.storage";
+import { backgroundMessageListener } from "./messageListener";
 
 export default defineBackground(() => {
   // Listener registration must remain synchronous in MV3 service workers.

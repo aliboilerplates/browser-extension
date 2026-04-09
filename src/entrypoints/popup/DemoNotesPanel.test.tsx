@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import * as messaging from "@/core/messaging";
-import { settingsStorage } from "@/core/storage/shared";
+import { settingsStorage } from "@/core/storage/storageItems";
 import { demoNotesStorage } from "@/shared/demo-notes.storage";
 import { DemoNotesPanel } from "./DemoNotesPanel";
 
@@ -37,7 +37,10 @@ describe("DemoNotesPanel", () => {
   });
 
   it("creates a note from the popup form", async () => {
-    vi.spyOn(messaging, "sendRuntimeMessage").mockImplementation(async (type, payload) => {
+    vi.spyOn(messaging, "sendMessage").mockImplementation((async (
+      type: messaging.AppMessageType,
+      payload: unknown
+    ) => {
       if (type === "demoNotes/createNote") {
         const notes = await demoNotesStorage.getValue();
         await demoNotesStorage.setValue([
@@ -49,14 +52,27 @@ describe("DemoNotesPanel", () => {
           },
           ...notes,
         ]);
+
+        return {
+          ok: true,
+          data: {
+            id: "new-note",
+            text: (payload as { text: string }).text,
+            source: "popup" as const,
+            createdAt: 1,
+          },
+        };
       }
 
-      return undefined as never;
-    });
+      return undefined;
+    }) as never);
 
     render(<DemoNotesPanel />);
 
-    await userEvent.type(screen.getByPlaceholderText("Write a note"), "New note");
+    await userEvent.type(
+      screen.getByPlaceholderText("Write a note"),
+      "New note"
+    );
     await userEvent.click(screen.getByRole("button", { name: "Save Note" }));
 
     await waitFor(async () => {

@@ -87,12 +87,12 @@ Testing rules:
 - add retry tests for content-tab delivery
 - add lifecycle tests for synchronous listener registration
 - keep unit and integration tests close to the source files they cover
-- reserve `template/tests/` for setup, shared helpers, and any future e2e support
+- reserve `tests/` for setup, shared helpers, and any future e2e support
 
 ## Suggested Folder Layout
 
 ```text
-template/
+.
   docs/
   src/
     core/

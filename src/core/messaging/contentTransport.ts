@@ -1,24 +1,20 @@
 import { browser } from "wxt/browser";
 import { backgroundLogger } from "@/core/logging/logger";
 import {
-  type AppMessageType,
-  getContract,
   type MessageTypeForTarget,
   type RuntimeRequest,
   type RuntimeResponse,
 } from "./contracts";
-import { MessagingTimeoutError } from "./errors";
+import { getMessageTarget, requiresResponse } from "./messageMetadata";
 
 export interface SendContentMessageOptions {
   maxRetries?: number;
   retryDelayMs?: number;
-  timeoutMs?: number;
 }
 
 const DEFAULT_OPTIONS: Required<SendContentMessageOptions> = {
   maxRetries: 4,
   retryDelayMs: 100,
-  timeoutMs: 3_000,
 };
 
 function isConnectionError(error: unknown) {
@@ -46,10 +42,9 @@ async function sendMessageToTabInternal<
   options: SendContentMessageOptions = {}
 ) {
   const settings = { ...DEFAULT_OPTIONS, ...options };
-  const contract = getContract(type);
   const request: RuntimeRequest<TType> = {
     type,
-    target: contract.target,
+    target: getMessageTarget(type),
     payload,
   };
 
@@ -61,25 +56,13 @@ async function sendMessageToTabInternal<
         RuntimeRequest<TType>,
         RuntimeResponse<TType>
       >(tabId, request);
+      const response = await responsePromise;
 
-      const response = await Promise.race([
-        responsePromise,
-        new Promise<never>((_, reject) => {
-          setTimeout(() => {
-            reject(
-              new MessagingTimeoutError(
-                `${String(type)} timed out after ${settings.timeoutMs}ms`
-              )
-            );
-          }, settings.timeoutMs);
-        }),
-      ]);
-
-      if (contract.requiresResponse && response && !response.ok) {
+      if (requiresResponse(type) && response && !response.ok) {
         throw new Error(response.error.message);
       }
 
-      if (contract.requiresResponse) {
+      if (requiresResponse(type)) {
         return (response as Exclude<typeof response, { ok: false }>).data;
       }
 

@@ -1,6 +1,6 @@
 # WXT Browser Extension Template
 
-Production-focused browser extension template built from the strongest patterns in this codebase.
+Production-focused browser extension template distilled from the strongest architecture patterns in the original Webshot codebase.
 
 ## Goals
 
@@ -52,7 +52,6 @@ The demo should be easy to remove after project creation.
 - maintainable custom messaging
 - clear ownership rules
 - realistic testing
-- clean extraction into a separate repo later
 - context-first source organization for extension behavior
 
 ## Remaining Work
@@ -60,4 +59,4 @@ The demo should be easy to remove after project creation.
 1. Keep tightening docs and code comments where architecture is non-obvious
 2. Expand verification around listener lifecycle and content delivery edge cases
 3. Polish the demo so it stays useful but easy to delete
-4. Prepare the template for extraction into its own repository
+4. Continue hardening the standalone template for reuse across new extensions

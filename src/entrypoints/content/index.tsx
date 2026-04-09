@@ -7,7 +7,7 @@ import ReactDOM from "react-dom/client";
 import { useEffect, useState } from "react";
 import { defineContentScript } from "wxt/utils/define-content-script";
 import { createShadowRootUi } from "wxt/utils/content-script-ui/shadow-root";
-import { createContentMessageListener } from "@/core/messaging/contentHandlers";
+import { createContentMessageListener } from "./messageListener";
 
 function ContentApp() {
   const [selectedText, setSelectedText] = useState("");

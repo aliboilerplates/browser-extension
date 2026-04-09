@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as messaging from "@/core/messaging";
-import { fakeBrowser } from "wxt/testing/fake-browser";
 import { demoNotesStorage } from "@/shared/demo-notes.storage";
 import {
   handleCreateNote,
@@ -8,6 +7,7 @@ import {
   handleGetNotes,
   handleSaveSelectedText,
 } from "./demoNotes.handlers";
+import { fakeBrowser } from "wxt/testing";
 
 describe("demo notes background handlers", () => {
   beforeEach(async () => {

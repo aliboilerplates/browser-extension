@@ -1,4 +1,4 @@
-import { settingsStorage } from "@/core/storage/shared";
+import { settingsStorage } from "@/core/storage/storageItems";
 import { createRuntimeMessageListener, MESSAGE_TARGET } from "@/core/messaging";
 import {
   handleCreateNote,

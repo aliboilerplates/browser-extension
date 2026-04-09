@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { MESSAGE_TARGET } from "./contracts";
-import { createRuntimeMessageListener, isRuntimeRequestForTarget } from "./listener";
+import { MESSAGE_TARGET } from "./messageConstants";
+import { createRuntimeMessageListener } from "./createMessageListener";
+import { isRuntimeRequestForTarget } from "./messageUtils";
 
 describe("isRuntimeRequestForTarget", () => {
   it("accepts known messages for the expected target", () => {
@@ -60,4 +61,3 @@ describe("createRuntimeMessageListener", () => {
     });
   });
 });
-

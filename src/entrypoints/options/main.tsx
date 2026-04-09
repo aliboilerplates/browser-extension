@@ -1,5 +1,5 @@
 import "@/assets.css";
-import { settingsStorage } from "@/core/storage/shared";
+import { settingsStorage } from "@/core/storage/storageItems";
 import { ThemeProvider } from "@/ui/components/ThemeProvider";
 import { useStorageItem } from "@/ui/hooks/useStorageItem";
 import React from "react";
@@ -10,7 +10,7 @@ function OptionsApp() {
 
   return (
     <ThemeProvider>
-      <main className="min-h-screen bg-base-100 p-6 text-base-content">
+      <main className="bg-base-100 text-base-content min-h-screen p-6">
         <div className="mx-auto max-w-3xl space-y-4">
           <h1 className="text-2xl font-semibold">Template Options</h1>
           <p className="text-sm opacity-75">
