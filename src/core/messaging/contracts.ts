@@ -1,7 +1,16 @@
-import type { BackgroundMessageMap } from "./definitions/backgroundMessages";
-import type { ContentMessageMap } from "./definitions/contentMessages";
+import {
+  backgroundMessageConfig,
+  type BackgroundMessageMap,
+} from "./definitions/backgroundMessages";
+import {
+  contentMessageConfig,
+  type ContentMessageMap,
+} from "./definitions/contentMessages";
 import { MESSAGE_TARGET } from "./messageConstants";
-import type { OffscreenMessageMap } from "./definitions/offscreenMessages";
+import {
+  offscreenMessageConfig,
+  type OffscreenMessageMap,
+} from "./definitions/offscreenMessages";
 
 export type MessageTarget =
   (typeof MESSAGE_TARGET)[keyof typeof MESSAGE_TARGET];
@@ -19,6 +28,10 @@ export interface MessageConfig {
 export type MessageConfigMap<TMap> = {
   [K in keyof TMap]: MessageConfig;
 };
+
+type AllMessageConfig = typeof backgroundMessageConfig &
+  typeof contentMessageConfig &
+  typeof offscreenMessageConfig;
 
 export type AppMessageType = {
   [TTarget in MessageTarget]: Extract<keyof MessageTargetMap[TTarget], string>;
@@ -48,17 +61,7 @@ export type TargetForMessage<TType extends AppMessageType> = {
 }[MessageTarget];
 
 export type RequiresResponse<TType extends AppMessageType> =
-  TType extends keyof BackgroundMessageMap
-    ? BackgroundMessageMap[TType] extends never
-      ? never
-      : TType extends "demoNotes/deleteNote" | "demoNotes/saveSelectedText"
-        ? false
-        : true
-    : TType extends keyof ContentMessageMap
-      ? false
-      : TType extends keyof OffscreenMessageMap
-        ? true
-        : never;
+  AllMessageConfig[TType]["requiresResponse"];
 
 export interface RuntimeRequest<TType extends AppMessageType = AppMessageType> {
   type: TType;
