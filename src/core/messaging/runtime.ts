@@ -10,14 +10,17 @@ import {
   type RuntimeSuccess,
 } from "./contracts";
 
-type SendOptions = {
+interface SendOptions {
   timeoutMs?: number;
-};
+}
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string) {
   return new Promise<T>((resolve, reject) => {
+    // One-off extension messages can otherwise hang forever if a receiver never responds.
     const timeoutId = setTimeout(() => {
-      reject(new MessagingTimeoutError(`${label} timed out after ${timeoutMs}ms`));
+      reject(
+        new MessagingTimeoutError(`${label} timed out after ${timeoutMs}ms`)
+      );
     }, timeoutMs);
 
     void promise.then(
@@ -27,7 +30,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string) {
       },
       (error: unknown) => {
         clearTimeout(timeoutId);
-        reject(error);
+        reject(error instanceof Error ? error : new Error(String(error)));
       }
     );
   });
@@ -37,7 +40,9 @@ export async function sendRuntimeMessage<TType extends AppMessageType>(
   type: TType,
   payload: RequestPayload<TType>,
   options: SendOptions = {}
-): Promise<RequiresResponse<TType> extends true ? RuntimeSuccess<TType>["data"] : void> {
+): Promise<
+  RequiresResponse<TType> extends true ? RuntimeSuccess<TType>["data"] : void
+> {
   const contract = getContract(type);
   const request: RuntimeRequest<TType> = {
     type,
@@ -67,4 +72,3 @@ export async function sendRuntimeMessage<TType extends AppMessageType>(
     ? RuntimeSuccess<TType>["data"]
     : void;
 }
-

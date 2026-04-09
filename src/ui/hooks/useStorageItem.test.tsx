@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";

@@ -6,5 +6,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  document.body.innerHTML = "";
+  if (typeof document !== "undefined") {
+    document.body.innerHTML = "";
+  }
 });

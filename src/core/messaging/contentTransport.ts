@@ -1,13 +1,19 @@
 import { browser } from "wxt/browser";
 import { backgroundLogger } from "@/core/logging/logger";
-import { type AppMessageType, getContract, type MessageTypeForTarget, type RuntimeRequest, type RuntimeResponse } from "./contracts";
+import {
+  type AppMessageType,
+  getContract,
+  type MessageTypeForTarget,
+  type RuntimeRequest,
+  type RuntimeResponse,
+} from "./contracts";
 import { MessagingTimeoutError } from "./errors";
 
-export type SendContentMessageOptions = {
+export interface SendContentMessageOptions {
   maxRetries?: number;
   retryDelayMs?: number;
   timeoutMs?: number;
-};
+}
 
 const DEFAULT_OPTIONS: Required<SendContentMessageOptions> = {
   maxRetries: 4,
@@ -31,7 +37,9 @@ async function wait(delayMs: number) {
   await new Promise((resolve) => setTimeout(resolve, delayMs));
 }
 
-async function sendMessageToTabInternal<TType extends MessageTypeForTarget<"CONTENT">>(
+async function sendMessageToTabInternal<
+  TType extends MessageTypeForTarget<"CONTENT">,
+>(
   tabId: number,
   type: TType,
   payload: RuntimeRequest<TType>["payload"],
@@ -59,7 +67,9 @@ async function sendMessageToTabInternal<TType extends MessageTypeForTarget<"CONT
         new Promise<never>((_, reject) => {
           setTimeout(() => {
             reject(
-              new MessagingTimeoutError(`${String(type)} timed out after ${settings.timeoutMs}ms`)
+              new MessagingTimeoutError(
+                `${String(type)} timed out after ${settings.timeoutMs}ms`
+              )
             );
           }, settings.timeoutMs);
         }),
@@ -75,6 +85,7 @@ async function sendMessageToTabInternal<TType extends MessageTypeForTarget<"CONT
 
       return undefined;
     } catch (error) {
+      // Tabs can reject while the content script is still loading or not yet injected.
       if (!isConnectionError(error) || attempt >= settings.maxRetries) {
         throw error;
       }
@@ -90,7 +101,9 @@ async function sendMessageToTabInternal<TType extends MessageTypeForTarget<"CONT
   }
 }
 
-export async function sendMessageToTab<TType extends MessageTypeForTarget<"CONTENT">>(
+export async function sendMessageToTab<
+  TType extends MessageTypeForTarget<"CONTENT">,
+>(
   tabId: number,
   type: TType,
   payload: RuntimeRequest<TType>["payload"],
@@ -101,7 +114,11 @@ export async function sendMessageToTab<TType extends MessageTypeForTarget<"CONTE
 
 export async function sendMessageToActiveTab<
   TType extends MessageTypeForTarget<"CONTENT">,
->(type: TType, payload: RuntimeRequest<TType>["payload"], options: SendContentMessageOptions = {}) {
+>(
+  type: TType,
+  payload: RuntimeRequest<TType>["payload"],
+  options: SendContentMessageOptions = {}
+) {
   const [activeTab] = await browser.tabs.query({
     active: true,
     currentWindow: true,

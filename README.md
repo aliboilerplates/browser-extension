@@ -21,6 +21,17 @@ Production-focused browser extension template built from the strongest patterns 
 - Vitest + WXT testing + minimal mocking
 - Colocated unit/integration tests next to source files
 
+## Current State
+
+The template already includes:
+
+- explicit-import WXT config
+- popup, options, background, content, and offscreen scaffolding
+- custom messaging core with typed contracts, runtime routing, timeout support, and retriable content delivery
+- shared persistence, theme, logging, and browser capability helpers
+- a lightweight `Web Clipper Notes` demo spanning popup, background, and content
+- colocated tests around messaging, storage, hooks, browser helpers, handlers, and popup UI
+
 ## Demo Extension
 
 The template includes a lightweight demo extension: `Web Clipper Notes`.
@@ -44,10 +55,9 @@ The demo should be easy to remove after project creation.
 - clean extraction into a separate repo later
 - context-first source organization for extension behavior
 
-## Next Build Phases
+## Remaining Work
 
-1. Implement messaging core
-2. Implement storage/theme/logging utilities
-3. Add entrypoints and content UI shell
-4. Build the demo extension
-5. Add tests across transport, storage, and UI
+1. Keep tightening docs and code comments where architecture is non-obvious
+2. Expand verification around listener lifecycle and content delivery edge cases
+3. Polish the demo so it stays useful but easy to delete
+4. Prepare the template for extraction into its own repository

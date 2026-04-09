@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { describe, expect, it } from "vitest";
 import { getSelectedText } from "./demoNotes.selection";
 
@@ -15,4 +17,3 @@ describe("getSelectedText", () => {
     expect(getSelectedText()).toBe("hello world");
   });
 });
-

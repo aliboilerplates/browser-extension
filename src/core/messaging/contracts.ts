@@ -7,18 +7,18 @@ export const MESSAGE_TARGET = {
 export type MessageTarget =
   (typeof MESSAGE_TARGET)[keyof typeof MESSAGE_TARGET];
 
-type BaseContract<
+interface BaseContract<
   TTarget extends MessageTarget,
   TRequest,
   TResponse,
   TRequiresResponse extends boolean,
-> = {
+> {
   target: TTarget;
   requiresResponse: TRequiresResponse;
   defaultTimeoutMs?: number;
   __request?: TRequest;
   __response?: TResponse;
-};
+}
 
 export function defineMessage<
   TTarget extends MessageTarget,
@@ -30,10 +30,7 @@ export function defineMessage<
   defaultTimeoutMs?: number;
 }): BaseContract<TTarget, TRequest, TResponse, true>;
 
-export function defineMessage<
-  TTarget extends MessageTarget,
-  TRequest,
->(config: {
+export function defineMessage<TTarget extends MessageTarget, TRequest>(config: {
   target: TTarget;
   requiresResponse: false;
   defaultTimeoutMs?: number;
@@ -69,12 +66,12 @@ export const messageContracts = {
   "demoNotes/getNotes": defineMessage<
     typeof MESSAGE_TARGET.background,
     undefined,
-    Array<{
+    {
       id: string;
       text: string;
       source: "popup" | "content" | "context-menu";
       createdAt: number;
-    }>
+    }[]
   >({
     target: MESSAGE_TARGET.background,
     requiresResponse: true,
@@ -133,32 +130,37 @@ export type MessageTypeForTarget<TTarget extends MessageTarget> = {
 }[AppMessageType];
 
 export type RequestPayload<TType extends AppMessageType> =
-  AppMessageMap[TType] extends { __request?: infer TRequest } ? TRequest : never;
+  AppMessageMap[TType] extends { __request?: infer TRequest }
+    ? TRequest
+    : never;
 
 export type ResponsePayload<TType extends AppMessageType> =
-  AppMessageMap[TType] extends { __response?: infer TResponse } ? TResponse : never;
+  AppMessageMap[TType] extends { __response?: infer TResponse }
+    ? TResponse
+    : never;
 
-export type TargetForMessage<TType extends AppMessageType> = AppMessageMap[TType]["target"];
+export type TargetForMessage<TType extends AppMessageType> =
+  AppMessageMap[TType]["target"];
 export type RequiresResponse<TType extends AppMessageType> =
   AppMessageMap[TType]["requiresResponse"];
 
-export type RuntimeRequest<TType extends AppMessageType = AppMessageType> = {
+export interface RuntimeRequest<TType extends AppMessageType = AppMessageType> {
   type: TType;
   target: TargetForMessage<TType>;
   payload: RequestPayload<TType>;
-};
+}
 
-export type RuntimeSuccess<TType extends AppMessageType> = {
+export interface RuntimeSuccess<TType extends AppMessageType> {
   ok: true;
   data: ResponsePayload<TType>;
-};
+}
 
-export type RuntimeFailure = {
+export interface RuntimeFailure {
   ok: false;
   error: {
     message: string;
   };
-};
+}
 
 export type RuntimeResponse<TType extends AppMessageType> =
   | RuntimeSuccess<TType>
@@ -171,4 +173,3 @@ export function isKnownMessageType(value: unknown): value is AppMessageType {
 export function getContract<TType extends AppMessageType>(type: TType) {
   return messageContracts[type];
 }
-

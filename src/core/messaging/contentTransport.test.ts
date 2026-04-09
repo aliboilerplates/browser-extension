@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { sendMessageToTab } from "./contentTransport";
+import { MessagingTimeoutError } from "./errors";
+import { sendMessageToActiveTab, sendMessageToTab } from "./contentTransport";
 
 describe("sendMessageToTab", () => {
   beforeEach(() => {
@@ -21,5 +22,26 @@ describe("sendMessageToTab", () => {
     });
 
     expect(sendMessage).toHaveBeenCalledTimes(2);
+  });
+
+  it("times out when content never responds", async () => {
+    fakeBrowser.tabs.sendMessage = vi.fn(
+      () => new Promise(() => undefined)
+    ) as typeof fakeBrowser.tabs.sendMessage;
+
+    await expect(
+      sendMessageToTab(1, "content/showToast", { message: "Hello" }, {
+        timeoutMs: 5,
+        maxRetries: 0,
+      })
+    ).rejects.toBeInstanceOf(MessagingTimeoutError);
+  });
+
+  it("fails clearly when there is no active tab", async () => {
+    fakeBrowser.tabs.query = vi.fn().mockResolvedValue([]) as typeof fakeBrowser.tabs.query;
+
+    await expect(
+      sendMessageToActiveTab("content/showToast", { message: "Hello" })
+    ).rejects.toThrow("No active tab available");
   });
 });
