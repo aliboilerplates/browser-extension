@@ -1,45 +1,28 @@
-import js from "@eslint/js";
-import globals from "globals";
+import eslintjs from "@eslint/js";
 import reactHooks from "eslint-plugin-react-hooks";
 import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
+import eslintPluginUnicorn from "eslint-plugin-unicorn";
 
-export default tseslint.config(
-  { ignores: [".output/**", ".wxt/**", "dist/**"] },
+export default defineConfig([
+  reactHooks.configs.flat.recommended,
+  eslintjs.configs.recommended,
+  tseslint.configs.recommendedTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
+  eslintPluginUnicorn.configs.unopinionated,
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommendedTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked
-    ],
-    files: ["**/*.{ts,tsx}"],
     languageOptions: {
-      ecmaVersion: 2022,
-      globals: globals.browser,
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: import.meta.dirname
-      }
+      },
     },
+    files: ["**/*.{ts,tsx}"],
+    ignores: [".output/**", ".wxt/**", "dist/**"],
+  },
+  {
     plugins: {
-      "react-hooks": reactHooks,
-      "unused-imports": unusedImports
+      "unused-imports": unusedImports,
     },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "off",
-      "unused-imports/no-unused-imports": "warn",
-      "unused-imports/no-unused-vars": [
-        "warn",
-        {
-          vars: "all",
-          varsIgnorePattern: "^_",
-          args: "after-used",
-          argsIgnorePattern: "^_"
-        }
-      ]
-    }
-  }
-);
-
+  },
+]);
