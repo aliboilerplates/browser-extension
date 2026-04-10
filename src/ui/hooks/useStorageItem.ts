@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 
 type StorageWatchCallback<T> = (value: T) => void;
 
-type StorageLike<T> = {
+interface StorageLike<T> {
   fallback: T;
   getValue: () => Promise<T>;
   setValue: (value: T) => Promise<void>;
   watch: (callback: StorageWatchCallback<T>) => () => void;
-};
+}
 
 export function useStorageItem<T>(item: StorageLike<T>) {
   const [value, setValue] = useState<T>(item.fallback);

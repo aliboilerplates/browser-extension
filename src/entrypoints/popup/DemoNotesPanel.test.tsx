@@ -64,7 +64,7 @@ describe("DemoNotesPanel", () => {
         };
       }
 
-      return undefined;
+      return;
     }) as never);
 
     render(<DemoNotesPanel />);

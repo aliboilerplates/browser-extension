@@ -10,10 +10,10 @@ function getChromeLike() {
 }
 
 export const supportsOffscreen = () =>
-  isChrome() && typeof getChromeLike() !== "undefined" && "offscreen" in getChromeLike()!;
+  isChrome() && getChromeLike() !== undefined && "offscreen" in getChromeLike()!;
 
 export const supportsSidePanel = () =>
-  isChrome() && typeof getChromeLike() !== "undefined" && "sidePanel" in getChromeLike()!;
+  isChrome() && getChromeLike() !== undefined && "sidePanel" in getChromeLike()!;
 
 export const supportsContextMenus = () =>
-  typeof browser !== "undefined" && typeof browser.contextMenus !== "undefined";
+  browser?.contextMenus !== undefined;

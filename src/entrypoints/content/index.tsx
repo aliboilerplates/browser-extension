@@ -22,7 +22,7 @@ function ContentApp() {
     const contentMessageListener = createContentMessageListener((message) => {
       setToastMessage(message);
       setToastVisible(true);
-      window.setTimeout(() => {
+      globalThis.setTimeout(() => {
         setToastVisible(false);
       }, 1800);
     });

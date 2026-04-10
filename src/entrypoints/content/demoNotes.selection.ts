@@ -1,4 +1,4 @@
 export function getSelectedText() {
-  return window.getSelection()?.toString().trim() ?? "";
+  return globalThis.getSelection()?.toString().trim() ?? "";
 }
 

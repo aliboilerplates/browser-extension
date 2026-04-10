@@ -66,7 +66,7 @@ async function sendMessageToTabInternal<
         return (response as Exclude<typeof response, { ok: false }>).data;
       }
 
-      return undefined;
+      return;
     } catch (error) {
       // Tabs can reject while the content script is still loading or not yet injected.
       if (!isConnectionError(error) || attempt >= settings.maxRetries) {

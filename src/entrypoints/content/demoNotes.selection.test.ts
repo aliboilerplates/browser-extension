@@ -9,7 +9,7 @@ describe("getSelectedText", () => {
       toString: () => "  hello world  ",
     };
 
-    Object.defineProperty(window, "getSelection", {
+    Object.defineProperty(globalThis, "getSelection", {
       configurable: true,
       value: () => selection,
     });

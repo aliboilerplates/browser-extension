@@ -82,7 +82,7 @@ describe("demo notes background handlers", () => {
   it("saves selected text and sends a toast", async () => {
     const toastSpy = vi
       .spyOn(messaging, "sendMessageToActiveTab")
-      .mockResolvedValue(undefined);
+      .mockResolvedValue();
 
     await handleSaveSelectedText({
       type: "demoNotes/saveSelectedText",
