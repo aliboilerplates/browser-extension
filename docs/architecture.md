@@ -1,17 +1,9 @@
 # Architecture
 
-## Final Direction
+This document describes the architectural decisions behind the template and the
+rules that keep multi-context extensions maintainable as they grow.
 
-This template uses a custom messaging system, not WXT messaging.
-
-Reason:
-
-- messaging is the most important reusable part of the template
-- this codebase already has strong target-based routing patterns
-- custom routing gives us better control over popup/content/background/offscreen flows
-- we can improve the current system without carrying over deprecated parts
-
-## Core Rules
+## Guiding Principles
 
 - One message has one intended receiver context.
 - Background owns workflow orchestration.
@@ -23,20 +15,25 @@ Reason:
 
 ## Messaging
 
-The custom messaging layer should provide:
+The template ships with a custom, typed messaging layer instead of a generic
+wrapper. Messaging is the single most important reusable piece of a multi-context
+extension, and keeping it in-repo makes it easy to evolve without fighting a
+third-party abstraction.
+
+The messaging layer provides:
 
 - typed target maps
 - typed message maps per receiver
 - typed request/response payloads
 - central routing in background
-- listener helpers for background/content/offscreen
+- listener helpers for background, content, and offscreen
 - automatic response handling from message contract metadata
 - optional timeout support
-- retry support only for content-tab delivery
+- retry support for content-tab delivery
 
-The messaging layer should not include:
+The messaging layer intentionally omits:
 
-- deprecated builders
+- message builder indirection
 - async message registries
 - caller-managed `keepChannelOpen`
 - transport-level debouncing
@@ -47,38 +44,34 @@ Use `wxt/storage` as the default persistence layer.
 
 Write rules:
 
-- preferences/settings: direct writes allowed
-- business/workflow state: background only
-- ephemeral UI state: Zustand or local component state
+- **Preferences / settings**: direct writes allowed from any context.
+- **Business or workflow state**: background only, via message commands.
+- **Ephemeral UI state**: Zustand or local component state.
 
-IndexedDB should be optional, not part of the base path.
+IndexedDB is not part of the base path. Add it only when a feature genuinely
+needs it.
 
-## Demo Extension
+## Entrypoint Ownership
 
-The demo extension is `Web Clipper Notes`.
-
-It should cover:
-
-- popup note creation and listing
-- selected-text capture from content script
-- background orchestration and mutations
-- content-side React toast/panel in Shadow DOM
-- persisted notes and persisted preferences
-- Zustand for local popup state
+| Context        | Owns                                                                 |
+| -------------- | -------------------------------------------------------------------- |
+| `background/`  | workflow orchestration, business-state mutations, message routing    |
+| `content/`     | DOM interaction, Shadow DOM UI, selection and page-local logic       |
+| `popup/`       | popup UI composition, popup-local state                              |
+| `options/`     | options page UI, preference editing                                  |
+| `offscreen/`   | optional scaffolding for capabilities that require an offscreen doc  |
 
 ## Testing
 
-Testing is a core template feature.
-
-Priorities:
+Testing is a first-class template feature. Priorities, in order:
 
 1. messaging handlers and router behavior
 2. storage behavior and reactivity
-3. lifecycle behavior
+3. listener lifecycle
 4. hooks
 5. components
 
-Testing rules:
+Rules:
 
 - prefer real handlers over mocked wrappers
 - prefer `fakeBrowser` over broad module mocks
@@ -86,41 +79,46 @@ Testing rules:
 - test real storage behavior where possible
 - add retry tests for content-tab delivery
 - add lifecycle tests for synchronous listener registration
-- keep unit and integration tests close to the source files they cover
+- keep unit and integration tests colocated with the source files they cover
 - reserve `tests/` for setup, shared helpers, and any future e2e support
 
-## Suggested Folder Layout
+## Folder Layout
 
 ```text
 .
-  docs/
-  src/
-    core/
-      messaging/
-      storage/
-      browser/
-      logging/
-    entrypoints/
-      background/
-      content/
-      popup/
-      options/
-      offscreen/
-    ui/
-      components/
-      hooks/
-      stores/
-      styles/
-    shared/
-      types/
-      demo-notes.storage.ts
-      utils/
-  tests/
+├── docs/
+├── public/
+│   └── _locales/
+├── src/
+│   ├── core/
+│   │   ├── browser/
+│   │   ├── logging/
+│   │   ├── messaging/
+│   │   └── storage/
+│   ├── entrypoints/
+│   │   ├── background/
+│   │   ├── content/
+│   │   ├── offscreen/
+│   │   ├── options/
+│   │   └── popup/
+│   ├── shared/
+│   │   ├── types/
+│   │   └── utils/
+│   └── ui/
+│       ├── components/
+│       ├── hooks/
+│       ├── stores/
+│       └── styles/
+└── tests/
+    ├── helpers/
+    └── setup.ts
 ```
 
 ## Implementation Notes
 
 - Keep comments only where architecture is non-obvious.
-- Keep the demo removable.
-- Keep the template smaller than Webshot but stronger in its foundations.
-- Prefer entrypoint-first organization for extension behavior; use `shared/` only for code that is genuinely cross-context and neutral.
+- The demo feature is designed to be removable without touching core.
+- Prefer entrypoint-first organization; use `shared/` only for genuinely
+  cross-context, neutral code.
+- Service-worker listeners must be registered synchronously at module load so
+  the background script survives reactivation.
