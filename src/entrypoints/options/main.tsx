@@ -17,19 +17,21 @@ function OptionsApp() {
             Direct preference writes are allowed from options.
           </p>
           <label className="form-control w-full max-w-xs">
-            <span className="label-text mb-2">Maximum notes shown</span>
-            <input
-              className="input input-bordered"
-              min={1}
+            <span className="label-text mb-2">Theme</span>
+            <select
+              className="select select-bordered"
               onChange={(event) => {
                 void update({
                   ...settings,
-                  maxNotes: Number(event.target.value) || 1,
+                  theme: event.target.value as typeof settings.theme,
                 });
               }}
-              type="number"
-              value={settings.maxNotes}
-            />
+              value={settings.theme}
+            >
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
           </label>
         </div>
       </main>

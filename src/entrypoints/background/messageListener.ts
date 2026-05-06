@@ -1,11 +1,5 @@
 import { settingsStorage } from "@/core/storage/storageItems";
 import { createRuntimeMessageListener, MESSAGE_TARGET } from "@/core/messaging";
-import {
-  handleCreateNote,
-  handleDeleteNote,
-  handleGetNotes,
-  handleSaveSelectedText,
-} from "@/entrypoints/background/demoNotes.handlers";
 
 export const backgroundMessageListener = createRuntimeMessageListener(
   MESSAGE_TARGET.background,
@@ -24,9 +18,12 @@ export const backgroundMessageListener = createRuntimeMessageListener(
         data: next,
       };
     },
-    "demoNotes/getNotes": handleGetNotes,
-    "demoNotes/createNote": handleCreateNote,
-    "demoNotes/deleteNote": handleDeleteNote,
-    "demoNotes/saveSelectedText": handleSaveSelectedText,
+    // The outer `ok` is RuntimeSuccess (transport). The inner `ok` is the Result
+    // payload (domain). Returning `{ ok: false, error: { code: "unavailable" } }`
+    // here would still be a transport success — the consumer branches on it.
+    "core/ping": () => ({
+      ok: true,
+      data: { ok: true, pongAt: Date.now() },
+    }),
   }
 );

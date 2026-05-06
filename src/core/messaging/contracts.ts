@@ -84,3 +84,31 @@ export interface RuntimeFailure {
 export type RuntimeResponse<TType extends AppMessageType> =
   | RuntimeSuccess<TType>
   | RuntimeFailure;
+
+/**
+ * Discriminated success/failure union for handler response payloads.
+ *
+ * `RuntimeResponse` is the *transport* layer: did the message round-trip?
+ * `Result` is the *domain* layer: did the handler's business logic succeed?
+ *
+ * The two compose. A handler's `RuntimeSuccess.data` is often a `Result`,
+ * which means consumers see two `ok` fields stacked:
+ *
+ *     const response = await sendMessage("core/ping");
+ *     if (!response.ok) return;        // transport failure
+ *     const result = response.data;    // Result<...>
+ *     if (!result.ok) return;          // domain failure: result.error.code
+ *     // success: spread fields from TData are flat on result
+ *
+ * `TCode` is a string-literal union of error codes; defaults to `string` for
+ * untyped failures. `TData` carries success-only fields. `TErrorData` carries
+ * extra error context alongside `code`. All default to empty so bare
+ * `Result` is valid.
+ */
+export type Result<
+  TCode extends string = string,
+  TData extends object = object,
+  TErrorData extends object = object,
+> =
+  | ({ ok: true } & TData)
+  | { ok: false; error: { code: TCode } & TErrorData };

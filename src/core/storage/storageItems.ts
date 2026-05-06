@@ -4,7 +4,6 @@ import { storage } from "wxt/utils/storage";
 export const settingsStorage = storage.defineItem<Settings>("local:settings", {
   fallback: {
     theme: "system",
-    maxNotes: 100,
   },
   version: 1,
 });

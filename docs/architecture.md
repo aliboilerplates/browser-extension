@@ -28,8 +28,12 @@ The messaging layer provides:
 - central routing in background
 - listener helpers for background, content, and offscreen
 - automatic response handling from message contract metadata
-- optional timeout support
-- retry support for content-tab delivery
+- one unified `sendMessage` that auto-routes by target (content delivery is
+  built in — pass an optional `{ tabId, frameId }` or fall back to the active
+  tab automatically)
+- retry support for content-tab delivery on transient injection errors
+- a `Result<TCode, TData, TErrorData>` type for typed domain failures, layered
+  on top of the transport-level `RuntimeResponse`
 
 The messaging layer intentionally omits:
 
@@ -87,6 +91,8 @@ Rules:
 ```text
 .
 ├── docs/
+├── examples/          # Optional overlays — copy into src/ to use
+│   └── notes/
 ├── public/
 │   └── _locales/
 ├── src/
@@ -117,8 +123,16 @@ Rules:
 ## Implementation Notes
 
 - Keep comments only where architecture is non-obvious.
-- The demo feature is designed to be removable without touching core.
+- `examples/` is the home for opinionated overlays. The template `src/` stays
+  lean — overlays live as copy-paste folders with their own README documenting
+  any contract, storage, and entrypoint merges.
 - Prefer entrypoint-first organization; use `shared/` only for genuinely
   cross-context, neutral code.
 - Service-worker listeners must be registered synchronously at module load so
   the background script survives reactivation.
+- Content message delivery via `sendMessage` returns `RuntimeFailure` on
+  failure rather than throwing — callers branch uniformly on `response.ok`
+  regardless of target.
+- `Result` is *opt-in*. Use it when a handler has multiple distinct failure
+  modes the caller branches on. Skip it for trivial getters that return data
+  or nothing.

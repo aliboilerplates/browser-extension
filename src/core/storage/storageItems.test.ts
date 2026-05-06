@@ -10,7 +10,6 @@ describe("shared storage", () => {
   it("returns default settings fallback", async () => {
     expect(await settingsStorage.getValue()).toEqual({
       theme: "system",
-      maxNotes: 100,
     });
   });
 

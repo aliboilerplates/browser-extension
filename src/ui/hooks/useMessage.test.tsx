@@ -22,7 +22,6 @@ describe("useMessage", () => {
       ok: true,
       data: {
         theme: "system",
-        maxNotes: 100,
       },
     };
     sendMessageMock.mockImplementation(() => Promise.resolve(response));
@@ -35,7 +34,6 @@ describe("useMessage", () => {
         ok: true,
         data: {
           theme: "system",
-          maxNotes: 100,
         },
       });
     });

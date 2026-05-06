@@ -1,4 +1,5 @@
 export type ThemePreference = "light" | "dark" | "system";
 
-export type { Note, NoteSource, Settings } from "./note";
-
+export interface Settings {
+  theme: ThemePreference;
+}

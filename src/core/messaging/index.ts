@@ -4,6 +4,7 @@ export {
   type RequiresResponse,
   type RequestPayload,
   type ResponsePayload,
+  type Result,
   type RuntimeRequest,
   type RuntimeResponse,
 } from "./contracts";
@@ -19,12 +20,10 @@ export {
   requiresResponse,
 } from "./messageMetadata";
 export { createRuntimeMessageListener } from "./createMessageListener";
-export { sendMessage } from "./sendMessage";
 export {
-  sendMessageToActiveTab,
-  sendMessageToTab,
-  type SendContentMessageOptions,
-} from "./contentTransport";
+  sendMessage,
+  type ContentRouteOptions,
+} from "./sendMessage";
 export {
   isBackgroundMessage,
   isContentMessage,

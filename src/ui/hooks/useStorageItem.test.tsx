@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import { settingsStorage } from "@/core/storage/storageItems";
@@ -14,7 +14,6 @@ describe("useStorageItem", () => {
   it("starts with fallback state and resolves to stored value", async () => {
     await settingsStorage.setValue({
       theme: "dark",
-      maxNotes: 50,
     });
 
     const { result } = renderHook(() => useStorageItem(settingsStorage));
@@ -25,5 +24,54 @@ describe("useStorageItem", () => {
       expect(result.current.loading).toBe(false);
       expect(result.current.value.theme).toBe("dark");
     });
+  });
+
+  it("re-renders when the underlying storage value changes", async () => {
+    const { result } = renderHook(() => useStorageItem(settingsStorage));
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    await act(async () => {
+      await settingsStorage.setValue({ theme: "light" });
+    });
+
+    await waitFor(() => {
+      expect(result.current.value.theme).toBe("light");
+    });
+  });
+
+  it("writes through to storage when update is called", async () => {
+    const { result } = renderHook(() => useStorageItem(settingsStorage));
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    await act(async () => {
+      await result.current.update({ theme: "dark" });
+    });
+
+    expect(await settingsStorage.getValue()).toEqual({ theme: "dark" });
+  });
+
+  it("does not throw after unmount when storage updates land late", async () => {
+    const { result, unmount } = renderHook(() =>
+      useStorageItem(settingsStorage)
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    unmount();
+
+    await act(async () => {
+      await settingsStorage.setValue({ theme: "light" });
+    });
+
+    // Reaching here without an unhandled exception is the assertion.
+    expect(true).toBe(true);
   });
 });

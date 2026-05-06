@@ -1,4 +1,4 @@
-import { sendMessageToActiveTab, toRuntimeFailure, type RuntimeResponse } from "@/core/messaging";
+import { sendMessage } from "@/core/messaging";
 import type { RuntimeRequest } from "@/core/messaging";
 import { demoNotesStorage } from "@/shared/demo-notes.storage";
 import type { DemoNote } from "@/shared/types/demoNotes";
@@ -54,11 +54,7 @@ export async function handleSaveSelectedText(
   const note = createNote(text, "content");
   await demoNotesStorage.setValue([note, ...notes]);
 
-  try {
-    await sendMessageToActiveTab("content/showToast", {
-      message: "Saved selection as note",
-    });
-  } catch (error) {
-    return toRuntimeFailure(error) as RuntimeResponse<"demoNotes/saveSelectedText">;
-  }
+  // Fire-and-forget: sendMessage returns void for command-style content
+  // messages and does not throw on delivery failure.
+  await sendMessage("content/showToast", { message: "Saved selection as note" });
 }

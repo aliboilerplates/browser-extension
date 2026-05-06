@@ -7,10 +7,7 @@ export const MESSAGE_TARGET = {
 export const BACKGROUND_MESSAGE = {
   getSettings: "core/getSettings",
   updateSettings: "core/updateSettings",
-  getNotes: "demoNotes/getNotes",
-  createNote: "demoNotes/createNote",
-  deleteNote: "demoNotes/deleteNote",
-  saveSelectedText: "demoNotes/saveSelectedText",
+  ping: "core/ping",
 } as const;
 
 export const CONTENT_MESSAGE = {

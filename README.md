@@ -8,9 +8,10 @@ need typed messaging, clean ownership boundaries, and real tests from day one.
 
 - **WXT** with explicit imports for predictable, readable code
 - **React 19** + **Tailwind CSS v4** + **daisyUI** for UI
-- **Zustand** for local UI state
-- **Custom typed messaging** layer with central background routing, timeouts,
-  and retriable content-tab delivery
+- **Zustand** ready for popup-local UI state
+- **Custom typed messaging** layer with central background routing, single
+  unified `sendMessage` for every target, retriable content-tab delivery, and
+  a `Result<TCode, TData, TErrorData>` type for typed handler errors
 - **Shadow DOM** content UI so page styles can't bleed in
 - **`wxt/storage`** with reactive hooks
 - **Vitest** + `fakeBrowser` with colocated unit and integration tests
@@ -21,13 +22,13 @@ need typed messaging, clean ownership boundaries, and real tests from day one.
 
 ## Tech Stack
 
-| Layer        | Choice                                    |
-| -- | -- |
-| Framework    | WXT 0.20                                  |
-| UI           | React 19, Tailwind v4, daisyUI            |
-| State        | Zustand, `wxt/storage`                    |
-| Testing      | Vitest, @wxt-dev/module-react, fakeBrowser |
-| Tooling      | TypeScript 5.8, ESLint 9, Prettier 3      |
+| Layer    | Choice                                     |
+|-|-|
+| Framework | WXT 0.20                                  |
+| UI       | React 19, Tailwind v4, daisyUI             |
+| State    | `wxt/storage`, optional Zustand            |
+| Testing  | Vitest, @wxt-dev/module-react, fakeBrowser |
+| Tooling  | TypeScript 5.8, ESLint 9, Prettier 3       |
 
 ## Getting Started
 
@@ -57,11 +58,8 @@ WXT will launch a browser with the extension loaded and hot-reload on changes.
 ### Build
 
 ```bash
-# Chrome
-pnpm build
-
-# Firefox
-pnpm build:firefox
+pnpm build           # Chrome
+pnpm build:firefox   # Firefox
 ```
 
 ### Package for the store
@@ -73,18 +71,18 @@ pnpm zip:firefox   # Firefox
 
 ## Scripts
 
-| Script             | Description                                    |
-| -- | -- |
-| `dev`              | Run the extension in Chrome with HMR           |
-| `dev:firefox`      | Run the extension in Firefox with HMR          |
-| `build`            | Production build for Chrome                    |
-| `build:firefox`    | Production build for Firefox                   |
-| `zip` / `zip:firefox` | Create a store-ready zip                    |
-| `test`             | Run the Vitest suite once                      |
-| `test:watch`       | Run Vitest in watch mode                       |
-| `compile`          | Type-check with `tsc --noEmit`                 |
-| `lint`             | Lint `src/` with ESLint                        |
-| `lint:fix`         | Autofix lint issues                            |
+| Script                | Description                          |
+|-|-|
+| `dev`                 | Run the extension in Chrome with HMR |
+| `dev:firefox`         | Run the extension in Firefox with HMR |
+| `build`               | Production build for Chrome          |
+| `build:firefox`       | Production build for Firefox         |
+| `zip` / `zip:firefox` | Create a store-ready zip             |
+| `test`                | Run the Vitest suite once            |
+| `test:watch`          | Run Vitest in watch mode             |
+| `compile`             | Type-check with `tsc --noEmit`       |
+| `lint`                | Lint `src/` with ESLint              |
+| `lint:fix`            | Autofix lint issues                  |
 
 ## Project Structure
 
@@ -94,35 +92,23 @@ src/
 ├── entrypoints/    # background, content, popup, options, offscreen
 ├── shared/         # Cross-context types and utilities
 └── ui/             # Reusable components, hooks, stores, styles
+examples/
+└── notes/          # Optional Web Clipper Notes overlay (copy into src/ to use)
 ```
 
 See [`docs/architecture.md`](./docs/architecture.md) for the full architectural
 rationale, ownership rules, and testing guidelines.
 
-## Demo Feature
+## Examples
 
-The template ships with a small **Web Clipper Notes** demo that exercises every
-core system end to end:
+Opinionated overlays that exercise the template's core systems live under
+[`examples/`](./examples/). Each example is a self-contained folder you copy
+into `src/` plus a small set of contract/storage merges documented in its own
+README.
 
-- popup note creation and listing
-- selected-text capture from the content script
-- background orchestration and storage mutations
-- Shadow DOM content UI in React
-- persisted notes and preferences via `wxt/storage`
-- popup-local state with Zustand
-
-### Removing the demo
-
-The demo is isolated so it can be deleted cleanly:
-
-1. Delete the demo entrypoint files under `src/entrypoints/popup`,
-   `src/entrypoints/content`, and `src/entrypoints/background` that reference
-   `demo-notes`.
-2. Delete `src/shared/demo-notes.storage.ts`.
-3. Remove any demo message contracts from `src/core/messaging`.
-4. Drop the corresponding colocated tests.
-
-The core template infrastructure keeps working with the demo removed.
+- [**Web Clipper Notes**](./examples/notes/README.md) — popup CRUD, content
+  selection capture, context-menu integration, toast feedback, persisted
+  notes.
 
 ## Testing
 
@@ -147,7 +133,7 @@ Before shipping your own extension:
    description, permissions, and `browser_specific_settings.gecko.id`.
 3. Replace the localized strings under `public/_locales/`.
 4. Swap the extension icons in `public/`.
-5. Remove the demo (see above) and start building.
+5. Decide whether to overlay any examples and start building.
 
 ## License
 

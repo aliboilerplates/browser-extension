@@ -18,7 +18,7 @@ export default defineConfig([
       },
     },
     files: ["**/*.{ts,tsx}"],
-    ignores: [".output/**", ".wxt/**", "dist/**"],
+    ignores: [".output/**", ".wxt/**", "dist/**", "examples/**"],
   },
   {
     plugins: {
