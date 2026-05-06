@@ -101,14 +101,13 @@ rationale, ownership rules, and testing guidelines.
 
 ## Examples
 
-Opinionated overlays that exercise the template's core systems live under
-[`examples/`](./examples/). Each example is a self-contained folder you copy
-into `src/` plus a small set of contract/storage merges documented in its own
-README.
+[`examples/`](./examples/) contains independent, runnable WXT projects built
+on top of the template. Each example has its own `package.json`, configs,
+and `node_modules` — `cd` in, install, and run.
 
 - [**Web Clipper Notes**](./examples/notes/README.md) — popup CRUD, content
   selection capture, context-menu integration, toast feedback, persisted
-  notes.
+  notes. Demonstrates every core system end to end.
 
 ## Testing
 

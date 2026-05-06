@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "WXT Template",
+    "description": "Default extension name"
+  },
+  "extensionDescription": {
+    "message": "Production-ready browser extension template",
+    "description": "Default extension description"
+  }
+}
+

@@ -123,9 +123,9 @@ Rules:
 ## Implementation Notes
 
 - Keep comments only where architecture is non-obvious.
-- `examples/` is the home for opinionated overlays. The template `src/` stays
-  lean — overlays live as copy-paste folders with their own README documenting
-  any contract, storage, and entrypoint merges.
+- `examples/` holds independent, runnable WXT projects built on top of the
+  template. Each example has its own `package.json` and configs; the
+  template `src/` stays lean.
 - Prefer entrypoint-first organization; use `shared/` only for genuinely
   cross-context, neutral code.
 - Service-worker listeners must be registered synchronously at module load so

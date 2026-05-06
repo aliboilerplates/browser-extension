@@ -1,81 +1,78 @@
-# Web Clipper Notes — Example Overlay
+# Web Clipper Notes — Runnable Example
 
-A working notes feature that exercises every core system end to end:
+A standalone WXT extension built on top of the lean
+[`wxt-browser-extension-template`](../../README.md). It demonstrates a Web
+Clipper Notes feature that exercises every core system end to end:
 
-- popup note creation and listing with filter + Zustand-backed UI state
-- selected-text capture from the content script
-- background command handlers and storage mutations
-- context-menu integration
-- toast feedback via `content/showToast`
-- persisted notes and settings via `wxt/storage`
+- popup CRUD with filter, theme switcher, and Zustand-backed UI state
+- selected-text capture from the content script with a "Save selection"
+  button
+- right-click context-menu integration ("Save selection as note")
+- background command handlers + `wxt/storage` persistence
+- toast feedback delivered via `content/showToast`
+- typed message contracts including the `Result` type
 
-This folder is **not** part of the template's `src/`. To use it, copy the files
-into `src/` and apply the small contract/storage merges below.
+This is an **independent project** — it has its own `package.json`,
+`node_modules`, and configs. It does not import from the template's `src/`.
 
-## Files
+## Getting Started
 
-```text
-examples/notes/
-├── entrypoints/
-│   ├── background/{demoNotes.handlers.ts, demoNotes.handlers.test.ts}
-│   ├── content/{demoNotes.bridge.ts, demoNotes.selection.ts, demoNotes.selection.test.ts}
-│   └── popup/{DemoNotesPanel.tsx, DemoNotesPanel.test.tsx}
-├── shared/
-│   ├── demo-notes.storage.ts
-│   └── types/{note.ts, demoNotes.ts}
-├── ui/stores/usePopupStore.ts
-└── snippets/
-    ├── messageConstants.diff.md
-    ├── backgroundMessages.diff.md
-    ├── storageItems.diff.md
-    ├── background.index.diff.md
-    └── popup.main.diff.md
+```bash
+cd examples/notes
+pnpm install
+pnpm dev          # Chrome
+pnpm dev:firefox  # Firefox
 ```
 
-## Restoration steps
+WXT loads the extension into a fresh browser profile with HMR.
 
-Copy files into `src/`:
+## Scripts
 
-```text
-examples/notes/entrypoints/background/*  → src/entrypoints/background/
-examples/notes/entrypoints/content/*     → src/entrypoints/content/
-examples/notes/entrypoints/popup/*       → src/entrypoints/popup/
-examples/notes/shared/demo-notes.storage.ts → src/shared/
-examples/notes/shared/types/*            → src/shared/types/
-examples/notes/ui/stores/usePopupStore.ts → src/ui/stores/
-```
+| Script           | Description                          |
+|-|-|
+| `dev`            | Run the extension in Chrome with HMR |
+| `dev:firefox`    | Run the extension in Firefox with HMR |
+| `build`          | Production build for Chrome          |
+| `build:firefox`  | Production build for Firefox         |
+| `zip`            | Store-ready Chrome zip               |
+| `test`           | Run the Vitest suite once            |
+| `test:watch`     | Run Vitest in watch mode             |
+| `compile`        | Type-check with `tsc --noEmit`       |
+| `lint`           | Lint `src/`                          |
 
-Then apply the snippet merges:
+## What this example adds on top of the template
 
-1. **`src/core/messaging/messageConstants.ts`** — add the four `demoNotes/*`
-   keys to `BACKGROUND_MESSAGE`. See [`snippets/messageConstants.diff.md`](./snippets/messageConstants.diff.md).
-2. **`src/core/messaging/definitions/backgroundMessages.ts`** — add the four
-   message map entries plus their config rows. Import `DemoNote` from
-   `@/shared/types/demoNotes`. See [`snippets/backgroundMessages.diff.md`](./snippets/backgroundMessages.diff.md).
-3. **`src/shared/types/index.ts`** — add `maxNotes: number` to `Settings`.
-   See [`snippets/storageItems.diff.md`](./snippets/storageItems.diff.md).
-4. **`src/core/storage/storageItems.ts`** — add `maxNotes: 100` to the
-   `settingsStorage` fallback. Same snippet file.
-5. **`src/entrypoints/background/messageListener.ts`** — wire the four demo
-   handlers next to the core handlers. See the snippet linked above for the
-   full list.
-6. **`src/entrypoints/background/index.ts`** — paste the context-menu block
-   inside the `defineBackground` callback. See [`snippets/background.index.diff.md`](./snippets/background.index.diff.md).
-7. **`src/entrypoints/popup/PopupApp.tsx`** — replace the popup body with
-   `<DemoNotesPanel />`. See [`snippets/popup.main.diff.md`](./snippets/popup.main.diff.md).
-8. **`src/entrypoints/content/index.tsx`** — re-add the mouseup listener and
-   save-selection button. See `snippets/popup.main.diff.md` (content section).
+The template ships a lean `core/` plus a tiny `core/ping` example message.
+This project layers a real feature on top:
 
-After all edits: `pnpm compile` should be clean and `pnpm dev` runs the demo.
+| File | Change vs. template |
+|-|-|
+| `src/core/messaging/messageConstants.ts` | adds 4 `demoNotes/*` keys |
+| `src/core/messaging/definitions/backgroundMessages.ts` | adds 4 message contracts (request + response + config) |
+| `src/shared/types/index.ts` | `Settings` adds `maxNotes` |
+| `src/core/storage/storageItems.ts` | `settingsStorage` fallback adds `maxNotes: 100` |
+| `src/shared/demo-notes.storage.ts` | new — persisted notes list |
+| `src/shared/types/note.ts`, `demoNotes.ts` | new — note domain types |
+| `src/entrypoints/background/index.ts` | adds context-menu integration |
+| `src/entrypoints/background/messageListener.ts` | wires 4 demo handlers |
+| `src/entrypoints/background/demoNotes.handlers.ts` | new — note CRUD logic |
+| `src/entrypoints/content/index.tsx` | adds mouseup listener + save-selection button |
+| `src/entrypoints/content/demoNotes.{bridge,selection}.ts` | new — page-side selection capture |
+| `src/entrypoints/popup/main.tsx` | mounts `<DemoNotesPanel />` |
+| `src/entrypoints/popup/DemoNotesPanel.tsx` | new — popup UI |
+| `src/entrypoints/options/main.tsx` | adds `maxNotes` number input |
+| `src/ui/stores/usePopupStore.ts` | new — Zustand store for popup search query |
 
-## Notes
+Everything else mirrors the template verbatim.
 
-- The template's stripped `Settings` is `{ theme }`. After the overlay,
-  `Settings` becomes `{ theme; maxNotes }`. No migration is needed for fresh
-  installs.
-- `usePopupStore` is the demo's filter-query store. It's only useful while
-  the demo is active — drop it again if you remove the demo.
-- The example tests are not run by the template's `pnpm test` (the
-  `examples/**` folder is excluded from `tsconfig.json` and `eslint.config.mjs`,
-  and Vitest scopes to `src/**`). Once you copy the test files into `src/`,
-  they participate in the suite.
+## Using this as a starting point
+
+You can copy this whole folder out as the basis for your own extension, then
+strip what you don't need. Or cherry-pick individual pieces into your own
+project — each addition above is small enough to grok and copy in isolation.
+
+The architectural patterns (typed messaging, `Result`, single `sendMessage`,
+shadow-root content UI, reactive storage hooks, MV3-safe listener
+registration) all come from the template — see
+[`../../docs/architecture.md`](../../docs/architecture.md) for the full
+rationale.
