@@ -1,30 +1,48 @@
-type LogLevel = "debug" | "info" | "warn" | "error";
+export type ConsoleMethod = (...args: unknown[]) => void;
 
-const LOG_LEVEL_WEIGHT: Record<LogLevel, number> = {
-  debug: 0,
-  info: 1,
-  warn: 2,
-  error: 3,
-};
-
-const MIN_LEVEL: LogLevel = import.meta.env.DEV ? "debug" : "warn";
-
-function shouldLog(level: LogLevel) {
-  return LOG_LEVEL_WEIGHT[level] >= LOG_LEVEL_WEIGHT[MIN_LEVEL];
+export interface ILogger {
+  info: ConsoleMethod;
+  warn: ConsoleMethod;
+  error: ConsoleMethod;
+  debug: ConsoleMethod;
 }
 
-export function createLogger(context: string) {
-  const prefix = `[${context}]`;
+export class Logger implements ILogger {
+  public info: ConsoleMethod;
+  public warn: ConsoleMethod;
+  public error: ConsoleMethod;
+  public debug: ConsoleMethod;
 
-  return {
-    debug: (...args: unknown[]) => shouldLog("debug") && console.debug(prefix, ...args),
-    info: (...args: unknown[]) => shouldLog("info") && console.info(prefix, ...args),
-    warn: (...args: unknown[]) => shouldLog("warn") && console.warn(prefix, ...args),
-    error: (...args: unknown[]) => shouldLog("error") && console.error(prefix, ...args),
-  };
+  private readonly isProduction: boolean;
+  private readonly prefix: string | undefined;
+
+  constructor(prefix?: string) {
+    this.isProduction = import.meta.env.PROD;
+    this.prefix = prefix;
+
+    const make = (methodName: keyof Console, enabled = true): ConsoleMethod => {
+      const fn = console[methodName] as ConsoleMethod;
+      if (typeof fn !== "function") {
+        return () => {
+          /* Empty */
+        };
+      }
+      if (!enabled) {
+        return () => {
+          /* Empty */
+        };
+      }
+      return this.prefix ? fn.bind(console, this.prefix) : fn.bind(console);
+    };
+
+    this.info = make("info", !this.isProduction);
+    this.warn = make("warn", !this.isProduction);
+    this.error = make("error", true);
+    this.debug = make("debug", !this.isProduction);
+  }
 }
 
-export const backgroundLogger = createLogger("background");
-export const contentLogger = createLogger("content");
-export const popupLogger = createLogger("popup");
-
+export const backgroundLogger = new Logger("[background]");
+export const contentLogger = new Logger("[content]");
+export const popupLogger = new Logger("[popup]");
+export const pageLogger = new Logger("[page]");
