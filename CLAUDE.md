@@ -2,8 +2,9 @@
 
 ## Toolchain
 
-Vite+ (`vp`) handles test, lint, and format; WXT owns dev/build. See
-`AGENTS.md` for `vp` usage.
+Vite+ (`vp`) handles test, lint, and format; WXT owns dev/build. `vp <name>`
+runs a Vite+ built-in; `vp run <name>` runs the `package.json` script. Vite+
+docs are local at `node_modules/vite-plus/docs`.
 
 - `pnpm check` — format check + Oxlint (type-aware) + type-check
 - `pnpm test` — Vitest via `vp test` (config in `vitest.config.ts`)

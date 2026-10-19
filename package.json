@@ -16,7 +16,7 @@
     "lint": "vp lint --max-warnings 0",
     "lint:fix": "vp lint --fix",
     "postinstall": "wxt prepare",
-    "prepare": "vp config",
+    "prepare": "vp config --no-agent",
     "fmt": "vp fmt",
     "check": "vp check"
   },

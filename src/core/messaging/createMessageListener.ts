@@ -27,16 +27,14 @@ export function createRuntimeMessageListener<TTarget extends MessageTarget>(
     ) => void
   ) => {
     if (!isRuntimeRequestForTarget(target, message)) {
-      return;
+      return undefined;
     }
 
     const handler = handlers[message.type];
 
     if (!handler) {
       sendResponse(
-        toRuntimeFailure(
-          new Error(`No handler registered for ${String(message.type)}`)
-        )
+        toRuntimeFailure(new Error(`No handler registered for ${message.type}`))
       );
       return true;
     }
@@ -57,8 +55,7 @@ export function createRuntimeMessageListener<TTarget extends MessageTarget>(
 
     void result;
 
-    if (requiresResponse(message.type)) {
-      return true;
-    }
+    // true keeps the channel open for the async sendResponse
+    return requiresResponse(message.type) ? true : undefined;
   };
 }

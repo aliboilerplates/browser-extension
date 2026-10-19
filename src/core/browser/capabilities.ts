@@ -1,5 +1,7 @@
 import { browser } from "wxt/browser";
 
+// Vitest exposes env flags as strings ("false"), so compare explicitly
+// oxlint-disable-next-line typescript/no-unnecessary-boolean-literal-compare
 export const isFirefox = () => import.meta.env.FIREFOX === true;
 export const isChrome = () => !isFirefox();
 

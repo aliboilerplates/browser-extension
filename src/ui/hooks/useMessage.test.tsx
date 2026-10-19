@@ -29,8 +29,8 @@ describe("useMessage", () => {
     const { result } = renderHook(() => useMessage("core/getSettings"));
 
     await act(async () => {
-      const response = await result.current.send();
-      expect(response).toEqual({
+      const sent = await result.current.send();
+      expect(sent).toEqual({
         ok: true,
         data: {
           theme: "system",
