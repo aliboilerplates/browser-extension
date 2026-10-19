@@ -109,6 +109,4 @@ export type Result<
   TCode extends string = string,
   TData extends object = object,
   TErrorData extends object = object,
-> =
-  | ({ ok: true } & TData)
-  | { ok: false; error: { code: TCode } & TErrorData };
+> = ({ ok: true } & TData) | { ok: false; error: { code: TCode } & TErrorData };

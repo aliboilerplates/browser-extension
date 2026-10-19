@@ -20,10 +20,7 @@ export {
   requiresResponse,
 } from "./messageMetadata";
 export { createRuntimeMessageListener } from "./createMessageListener";
-export {
-  sendMessage,
-  type ContentRouteOptions,
-} from "./sendMessage";
+export { sendMessage, type ContentRouteOptions } from "./sendMessage";
 export {
   isBackgroundMessage,
   isContentMessage,

@@ -10,11 +10,10 @@ export function ContentToast({
   }
 
   return (
-    <div className="pointer-events-none fixed bottom-4 right-4 z-[2147483647]">
-      <div className="rounded-box bg-base-100 px-4 py-3 text-sm shadow-xl ring-1 ring-base-300">
+    <div className="pointer-events-none fixed right-4 bottom-4 z-[2147483647]">
+      <div className="rounded-box bg-base-100 ring-base-300 px-4 py-3 text-sm shadow-xl ring-1">
         {message}
       </div>
     </div>
   );
 }
-

@@ -29,9 +29,12 @@ export default defineConfig({
   hooks: {
     "build:before": (wxt) => {
       if (wxt.config.browser === "firefox") {
-        wxt.config.manifest.permissions = ["storage", "activeTab", "contextMenus"];
+        wxt.config.manifest.permissions = [
+          "storage",
+          "activeTab",
+          "contextMenus",
+        ];
       }
     },
   },
 });
-

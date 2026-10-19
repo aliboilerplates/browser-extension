@@ -16,9 +16,7 @@ type ResponseMessageType = {
 type SendArgs<TType extends ResponseMessageType> =
   RequestPayload<TType> extends void ? [] : [payload: RequestPayload<TType>];
 
-const sendResponseMessage = sendMessage as <
-  TType extends ResponseMessageType,
->(
+const sendResponseMessage = sendMessage as <TType extends ResponseMessageType>(
   type: TType,
   ...args: SendArgs<TType>
 ) => Promise<RuntimeResponse<TType>>;

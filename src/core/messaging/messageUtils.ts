@@ -1,4 +1,8 @@
-import { type MessageTarget, type MessageTypeForTarget, type RuntimeRequest } from "./contracts";
+import {
+  type MessageTarget,
+  type MessageTypeForTarget,
+  type RuntimeRequest,
+} from "./contracts";
 import { MESSAGE_TARGET } from "./messageConstants";
 import { getMessageTarget, isKnownMessageType } from "./messageMetadata";
 
@@ -24,7 +28,11 @@ export function isRuntimeRequestForTarget<TTarget extends MessageTarget>(
   target: TTarget,
   message: unknown
 ): message is RuntimeRequest<MessageTypeForTarget<TTarget>> {
-  if (typeof message !== "object" || message === null || Array.isArray(message)) {
+  if (
+    typeof message !== "object" ||
+    message === null ||
+    Array.isArray(message)
+  ) {
     return false;
   }
 

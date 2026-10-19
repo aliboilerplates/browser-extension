@@ -35,14 +35,19 @@ use the old transport API; ripping them out cleanly requires moving demo code fi
 ### `sendMessage.ts` (rewritten, single public entry)
 
 ```ts
-export interface ContentRouteOptions { tabId?: number; frameId?: number }
+export interface ContentRouteOptions {
+  tabId?: number;
+  frameId?: number;
+}
 
 export function sendMessage<T extends ResponseMessage>(
-  type: T, ...args: SendArgs<T>
+  type: T,
+  ...args: SendArgs<T>
 ): Promise<RuntimeResponse<T>>;
 
 export function sendMessage<T extends CommandMessage>(
-  type: T, ...args: SendArgs<T>
+  type: T,
+  ...args: SendArgs<T>
 ): Promise<void>;
 ```
 
@@ -54,13 +59,13 @@ file. `sendToContentTab` is exported for tests but **not** re-exported from
 
 Routing table:
 
-| target | tabId | requiresResponse | behavior |
-|-|-|-|-|
-| background/offscreen | n/a | true | `browser.runtime.sendMessage` → `RuntimeResponse` |
-| background/offscreen | n/a | false | `browser.runtime.sendMessage` → void |
-| content | explicit or active-tab | either | `sendToContentTab` with retry |
-| content | none, no active tab | true | return `toRuntimeFailure("No active tab…")` |
-| content | none, no active tab | false | silent void |
+| target               | tabId                  | requiresResponse | behavior                                          |
+| -------------------- | ---------------------- | ---------------- | ------------------------------------------------- |
+| background/offscreen | n/a                    | true             | `browser.runtime.sendMessage` → `RuntimeResponse` |
+| background/offscreen | n/a                    | false            | `browser.runtime.sendMessage` → void              |
+| content              | explicit or active-tab | either           | `sendToContentTab` with retry                     |
+| content              | none, no active tab    | true             | return `toRuntimeFailure("No active tab…")`       |
+| content              | none, no active tab    | false            | silent void                                       |
 
 **Failure-surface change:** retry exhaustion or "no active tab" returns
 `RuntimeFailure` instead of throwing. This unifies how all targets surface failures.
@@ -72,9 +77,7 @@ export type Result<
   TCode extends string = string,
   TData extends object = object,
   TErrorData extends object = object,
-> =
-  | ({ ok: true } & TData)
-  | { ok: false; error: { code: TCode } & TErrorData };
+> = ({ ok: true } & TData) | { ok: false; error: { code: TCode } & TErrorData };
 ```
 
 Doc-comment makes the **dual-`ok` layering** explicit. Outer `ok` (in
@@ -146,12 +149,12 @@ demo tests live under `examples/` (not run by `pnpm test`).
 **TDD sequence:**
 
 1. `Result` type assertions (3 shapes).
-2–9. `sendMessage` routing — background payload-less; command vs response; content with explicit tabId; content with active-tab fallback; content no-active-tab (response failure, command silent); retry on connection error; retry exhaustion; non-connection error.
-10–14. `createMessageListener` — handler-not-found; wrong target; handler throws; missing-response; fire-and-forget.
-15–17. `messageMetadata` — `getMessageTarget`; `requiresResponse`; `isKnownMessageType`.
-18–20. `useStorageItem` — watch propagates; unmount cleanup; update writes.
-21. `messageUtils.isRuntimeRequestForTarget` — non-object/array cases.
-22. Popup smoke test — theme select + ping button.
+   2–9. `sendMessage` routing — background payload-less; command vs response; content with explicit tabId; content with active-tab fallback; content no-active-tab (response failure, command silent); retry on connection error; retry exhaustion; non-connection error.
+   10–14. `createMessageListener` — handler-not-found; wrong target; handler throws; missing-response; fire-and-forget.
+   15–17. `messageMetadata` — `getMessageTarget`; `requiresResponse`; `isKnownMessageType`.
+   18–20. `useStorageItem` — watch propagates; unmount cleanup; update writes.
+2. `messageUtils.isRuntimeRequestForTarget` — non-object/array cases.
+3. Popup smoke test — theme select + ping button.
 
 ## Goals
 

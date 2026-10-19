@@ -30,15 +30,7 @@ export function createRuntimeMessageListener<TTarget extends MessageTarget>(
       return;
     }
 
-    const handler = handlers[message.type] as
-      | ((
-          message: RuntimeRequest<MessageTypeForTarget<TTarget>>,
-          sender: Browser.runtime.MessageSender
-        ) =>
-          | Promise<RuntimeResponse<MessageTypeForTarget<TTarget>> | void>
-          | RuntimeResponse<MessageTypeForTarget<TTarget>>
-          | void)
-      | undefined;
+    const handler = handlers[message.type];
 
     if (!handler) {
       sendResponse(
@@ -53,20 +45,13 @@ export function createRuntimeMessageListener<TTarget extends MessageTarget>(
       .then((response) => {
         if (requiresResponse(message.type)) {
           sendResponse(
-            (response ??
-              toRuntimeFailure(
-                new Error("Missing response")
-              )) as RuntimeResponse<MessageTypeForTarget<TTarget>>
+            response ?? toRuntimeFailure(new Error("Missing response"))
           );
         }
       })
       .catch((error: unknown) => {
         if (requiresResponse(message.type)) {
-          sendResponse(
-            toRuntimeFailure(error) as RuntimeResponse<
-              MessageTypeForTarget<TTarget>
-            >
-          );
+          sendResponse(toRuntimeFailure(error));
         }
       });
 

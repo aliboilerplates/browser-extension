@@ -14,28 +14,28 @@ need typed messaging, clean ownership boundaries, and real tests from day one.
   a `Result<TCode, TData, TErrorData>` type for typed handler errors
 - **Shadow DOM** content UI so page styles can't bleed in
 - **`wxt/storage`** with reactive hooks
+- **Vite+** (`vp`) as the single toolchain: Vitest, Oxlint (type-aware), Oxfmt
 - **Vitest** + `fakeBrowser` with colocated unit and integration tests
-- **ESLint 9** (flat config, `typescript-eslint`, `unicorn`) + **Prettier**
-- **Husky** + **lint-staged** pre-commit hooks
+- Pre-commit hook runs `vp check --fix` on staged files
 - **Chrome** and **Firefox** build targets
 - Popup, options, background, content, and offscreen entrypoints scaffolded
 
 ## Tech Stack
 
-| Layer    | Choice                                     |
-|-|-|
-| Framework | WXT 0.20                                  |
-| UI       | React 19, Tailwind v4, daisyUI             |
-| State    | `wxt/storage`, optional Zustand            |
-| Testing  | Vitest, @wxt-dev/module-react, fakeBrowser |
-| Tooling  | TypeScript 5.8, ESLint 9, Prettier 3       |
+| Layer     | Choice                                     |
+| --------- | ------------------------------------------ |
+| Framework | WXT 0.20                                   |
+| UI        | React 19, Tailwind v4, daisyUI             |
+| State     | `wxt/storage`, optional Zustand            |
+| Testing   | Vitest, @wxt-dev/module-react, fakeBrowser |
+| Tooling   | TypeScript 5.8, Vite+ (Oxlint, Oxfmt)      |
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
-- [pnpm](https://pnpm.io) (recommended) or npm
+- Node.js 22.22.1+ or 24.11+ (required by Vite+)
+- [pnpm](https://pnpm.io) 10
 
 ### Installation
 
@@ -71,18 +71,20 @@ pnpm zip:firefox   # Firefox
 
 ## Scripts
 
-| Script                | Description                          |
-|-|-|
-| `dev`                 | Run the extension in Chrome with HMR |
+| Script                | Description                           |
+| --------------------- | ------------------------------------- |
+| `dev`                 | Run the extension in Chrome with HMR  |
 | `dev:firefox`         | Run the extension in Firefox with HMR |
-| `build`               | Production build for Chrome          |
-| `build:firefox`       | Production build for Firefox         |
-| `zip` / `zip:firefox` | Create a store-ready zip             |
-| `test`                | Run the Vitest suite once            |
-| `test:watch`          | Run Vitest in watch mode             |
-| `compile`             | Type-check with `tsc --noEmit`       |
-| `lint`                | Lint `src/` with ESLint              |
-| `lint:fix`            | Autofix lint issues                  |
+| `build`               | Production build for Chrome           |
+| `build:firefox`       | Production build for Firefox          |
+| `zip` / `zip:firefox` | Create a store-ready zip              |
+| `test`                | Run the Vitest suite once             |
+| `test:watch`          | Run Vitest in watch mode              |
+| `check`               | Format check, lint, and type-check    |
+| `compile`             | Type-check with `tsc --noEmit`        |
+| `lint`                | Lint with Oxlint                      |
+| `lint:fix`            | Autofix lint issues                   |
+| `fmt`                 | Format with Oxfmt                     |
 
 ## Project Structure
 
@@ -92,22 +94,10 @@ src/
 ├── entrypoints/    # background, content, popup, options, offscreen
 ├── shared/         # Cross-context types and utilities
 └── ui/             # Reusable components, hooks, stores, styles
-examples/
-└── notes/          # Optional Web Clipper Notes overlay (copy into src/ to use)
 ```
 
 See [`docs/architecture.md`](./docs/architecture.md) for the full architectural
 rationale, ownership rules, and testing guidelines.
-
-## Examples
-
-[`examples/`](./examples/) contains independent, runnable WXT projects built
-on top of the template. Each example has its own `package.json`, configs,
-and `node_modules` — `cd` in, install, and run.
-
-- [**Web Clipper Notes**](./examples/notes/README.md) — popup CRUD, content
-  selection capture, context-menu integration, toast feedback, persisted
-  notes. Demonstrates every core system end to end.
 
 ## Testing
 
@@ -132,7 +122,6 @@ Before shipping your own extension:
    description, permissions, and `browser_specific_settings.gecko.id`.
 3. Replace the localized strings under `public/_locales/`.
 4. Swap the extension icons in `public/`.
-5. Decide whether to overlay any examples and start building.
 
 ## License
 

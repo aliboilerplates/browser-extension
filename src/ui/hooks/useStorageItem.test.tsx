@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vite-plus/test";
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import { settingsStorage } from "@/core/storage/storageItems";
 import { useStorageItem } from "./useStorageItem";

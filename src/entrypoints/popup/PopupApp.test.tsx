@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-/* eslint-disable unicorn/no-useless-undefined */
+/* oxlint-disable unicorn/no-useless-undefined */
 
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import * as messaging from "@/core/messaging";
 import { settingsStorage } from "@/core/storage/storageItems";
@@ -42,7 +42,9 @@ describe("PopupApp", () => {
 
     render(<PopupApp />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Ping background" }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Ping background" })
+    );
 
     await waitFor(() => {
       expect(screen.getByText(/Pong at /)).toBeTruthy();
@@ -64,7 +66,9 @@ describe("PopupApp", () => {
 
     render(<PopupApp />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Ping background" }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Ping background" })
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Error: unavailable")).toBeTruthy();

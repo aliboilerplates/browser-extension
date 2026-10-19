@@ -1,1 +1,1 @@
-// eslint-disable-next-line unicorn/no-empty-file
+// oxlint-disable unicorn/no-empty-file

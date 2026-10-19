@@ -48,5 +48,5 @@ export function getMessageTarget<TType extends AppMessageType>(
 export function requiresResponse<TType extends AppMessageType>(
   type: TType
 ): RequiresResponse<TType> {
-  return messageConfig[type].requiresResponse as RequiresResponse<TType>;
+  return messageConfig[type].requiresResponse;
 }

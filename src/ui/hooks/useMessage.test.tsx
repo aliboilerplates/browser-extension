@@ -2,7 +2,7 @@
 
 import { renderHook } from "@testing-library/react";
 import { act } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { sendMessage } from "@/core/messaging/sendMessage";
 import type { RuntimeResponse } from "@/core/messaging";
 import { useMessage } from "./useMessage";

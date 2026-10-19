@@ -1,5 +1,5 @@
-/* eslint-disable unicorn/no-useless-undefined */
-import { describe, expect, it } from "vitest";
+/* oxlint-disable unicorn/no-useless-undefined */
+import { describe, expect, it } from "vite-plus/test";
 import {
   getMessageTarget,
   isKnownMessageType,
@@ -9,7 +9,9 @@ import { MESSAGE_TARGET } from "./messageConstants";
 
 describe("getMessageTarget", () => {
   it("resolves background messages", () => {
-    expect(getMessageTarget("core/getSettings")).toBe(MESSAGE_TARGET.background);
+    expect(getMessageTarget("core/getSettings")).toBe(
+      MESSAGE_TARGET.background
+    );
     expect(getMessageTarget("core/ping")).toBe(MESSAGE_TARGET.background);
   });
 

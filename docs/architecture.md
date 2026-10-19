@@ -57,13 +57,13 @@ needs it.
 
 ## Entrypoint Ownership
 
-| Context        | Owns                                                                 |
-| -------------- | -------------------------------------------------------------------- |
-| `background/`  | workflow orchestration, business-state mutations, message routing    |
-| `content/`     | DOM interaction, Shadow DOM UI, selection and page-local logic       |
-| `popup/`       | popup UI composition, popup-local state                              |
-| `options/`     | options page UI, preference editing                                  |
-| `offscreen/`   | optional scaffolding for capabilities that require an offscreen doc  |
+| Context       | Owns                                                                |
+| ------------- | ------------------------------------------------------------------- |
+| `background/` | workflow orchestration, business-state mutations, message routing   |
+| `content/`    | DOM interaction, Shadow DOM UI, selection and page-local logic      |
+| `popup/`      | popup UI composition, popup-local state                             |
+| `options/`    | options page UI, preference editing                                 |
+| `offscreen/`  | optional scaffolding for capabilities that require an offscreen doc |
 
 ## Testing
 
@@ -91,8 +91,6 @@ Rules:
 ```text
 .
 ├── docs/
-├── examples/          # Optional overlays — copy into src/ to use
-│   └── notes/
 ├── public/
 │   └── _locales/
 ├── src/
@@ -123,9 +121,6 @@ Rules:
 ## Implementation Notes
 
 - Keep comments only where architecture is non-obvious.
-- `examples/` holds independent, runnable WXT projects built on top of the
-  template. Each example has its own `package.json` and configs; the
-  template `src/` stays lean.
 - Prefer entrypoint-first organization; use `shared/` only for genuinely
   cross-context, neutral code.
 - Service-worker listeners must be registered synchronously at module load so
@@ -133,6 +128,6 @@ Rules:
 - Content message delivery via `sendMessage` returns `RuntimeFailure` on
   failure rather than throwing — callers branch uniformly on `response.ok`
   regardless of target.
-- `Result` is *opt-in*. Use it when a handler has multiple distinct failure
+- `Result` is _opt-in_. Use it when a handler has multiple distinct failure
   modes the caller branches on. Skip it for trivial getters that return data
   or nothing.

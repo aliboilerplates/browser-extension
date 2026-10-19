@@ -1,9 +1,9 @@
-import { dirname, resolve } from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus";
 import { WxtVitest } from "wxt/testing/vitest-plugin";
 
-const rootDir = dirname(fileURLToPath(import.meta.url));
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   root: rootDir,
@@ -11,7 +11,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.{ts,tsx}"],
-    setupFiles: [resolve(rootDir, "tests/setup.ts")],
+    setupFiles: [path.resolve(rootDir, "tests/setup.ts")],
     coverage: {
       provider: "v8",
       include: ["src/**/*.{ts,tsx}"],
@@ -19,8 +19,8 @@ export default defineConfig({
         statements: 60,
         branches: 60,
         functions: 60,
-        lines: 60
-      }
-    }
-  }
+        lines: 60,
+      },
+    },
+  },
 });

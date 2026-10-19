@@ -1,5 +1,5 @@
-/* eslint-disable unicorn/no-useless-undefined */
-import { describe, expect, it, vi } from "vitest";
+/* oxlint-disable unicorn/no-useless-undefined */
+import { describe, expect, it, vi } from "vite-plus/test";
 import { MESSAGE_TARGET } from "./messageConstants";
 import { createRuntimeMessageListener } from "./createMessageListener";
 import { isRuntimeRequestForTarget } from "./messageUtils";
@@ -26,12 +26,18 @@ describe("isRuntimeRequestForTarget", () => {
   });
 
   it("rejects non-object messages", () => {
-    expect(isRuntimeRequestForTarget(MESSAGE_TARGET.background, null)).toBe(false);
+    expect(isRuntimeRequestForTarget(MESSAGE_TARGET.background, null)).toBe(
+      false
+    );
     expect(isRuntimeRequestForTarget(MESSAGE_TARGET.background, "string")).toBe(
       false
     );
-    expect(isRuntimeRequestForTarget(MESSAGE_TARGET.background, 42)).toBe(false);
-    expect(isRuntimeRequestForTarget(MESSAGE_TARGET.background, [])).toBe(false);
+    expect(isRuntimeRequestForTarget(MESSAGE_TARGET.background, 42)).toBe(
+      false
+    );
+    expect(isRuntimeRequestForTarget(MESSAGE_TARGET.background, [])).toBe(
+      false
+    );
   });
 
   it("rejects messages with unknown type strings", () => {
@@ -63,7 +69,7 @@ describe("createRuntimeMessageListener", () => {
         target: MESSAGE_TARGET.background,
         payload: undefined,
       },
-      {} as never,
+      {},
       sendResponse
     );
 
@@ -80,7 +86,10 @@ describe("createRuntimeMessageListener", () => {
   });
 
   it("returns a runtime failure when no handler is registered for the type", () => {
-    const listener = createRuntimeMessageListener(MESSAGE_TARGET.background, {});
+    const listener = createRuntimeMessageListener(
+      MESSAGE_TARGET.background,
+      {}
+    );
     const sendResponse = vi.fn();
 
     listener(
@@ -89,13 +98,15 @@ describe("createRuntimeMessageListener", () => {
         target: MESSAGE_TARGET.background,
         payload: undefined,
       },
-      {} as never,
+      {},
       sendResponse
     );
 
     expect(sendResponse).toHaveBeenCalledWith({
       ok: false,
-      error: { message: expect.stringContaining("No handler registered") as unknown as string },
+      error: {
+        message: expect.stringContaining("No handler registered") as unknown,
+      },
     });
   });
 
@@ -112,7 +123,7 @@ describe("createRuntimeMessageListener", () => {
         target: MESSAGE_TARGET.content,
         payload: { message: "ignored" },
       },
-      {} as never,
+      {},
       sendResponse
     );
 
@@ -134,7 +145,7 @@ describe("createRuntimeMessageListener", () => {
         target: MESSAGE_TARGET.background,
         payload: undefined,
       },
-      {} as never,
+      {},
       sendResponse
     );
 
@@ -160,7 +171,7 @@ describe("createRuntimeMessageListener", () => {
         target: MESSAGE_TARGET.background,
         payload: undefined,
       },
-      {} as never,
+      {},
       sendResponse
     );
 
@@ -169,7 +180,9 @@ describe("createRuntimeMessageListener", () => {
 
     expect(sendResponse).toHaveBeenCalledWith({
       ok: false,
-      error: { message: expect.stringContaining("Missing response") as unknown as string },
+      error: {
+        message: expect.stringContaining("Missing response") as unknown,
+      },
     });
   });
 
@@ -186,7 +199,7 @@ describe("createRuntimeMessageListener", () => {
         target: MESSAGE_TARGET.content,
         payload: { message: "Hi" },
       },
-      {} as never,
+      {},
       sendResponse
     );
 

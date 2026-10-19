@@ -1,20 +1,19 @@
 # wxt-extension template
 
-## Repo shape
+## Toolchain
 
-- `src/` — the lean template. This is what users fork.
-- `examples/*` — runnable demos built on top of the template. Each is an
-  independent project with its own `package.json` and configs. Mirrors the
-  pattern WXT uses for its own `templates/*` (independent, hand-edited).
+Vite+ (`vp`) handles test, lint, and format; WXT owns dev/build. See
+`AGENTS.md` for `vp` usage.
 
-## Rule: when changing shared code, also update each example
+- `pnpm check` — format check + Oxlint (type-aware) + type-check
+- `pnpm test` — Vitest via `vp test` (config in `vitest.config.ts`)
+- `pnpm compile` — `tsc --noEmit`
+- `pnpm dev` / `pnpm build` — WXT. Don't use `vp dev` / `vp build`; they run
+  plain Vite, not WXT.
 
-If a file you're editing under `src/` also exists in any `examples/*/src/`,
-apply the same change there too. Same for `tests/setup.ts` and any other
-file the examples mirror.
+Lint and format config lives in `vite.config.ts`. Test config stays in
+`vitest.config.ts` so the `WxtVitest` plugin never leaks into the WXT build.
 
-After a dual-edit, run `pnpm test && pnpm compile && pnpm lint` in the
-template AND in each affected example.
+Requires Node 22.22.1+ or 24.11+.
 
-Files that diverge between the template and an example are demo-specific
-overrides — don't "fix" them by reverting to the template version.
+After changes, run `pnpm check && pnpm test && pnpm compile`.

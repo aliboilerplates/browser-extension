@@ -7,5 +7,5 @@
     },
     "strict": true
   },
-  "exclude": ["vitest.config.ts", "examples/**"]
+  "exclude": ["vitest.config.ts"]
 }

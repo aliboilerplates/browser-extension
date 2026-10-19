@@ -63,7 +63,6 @@ export async function sendMessage<TType extends AppMessageType>(
   const request: RuntimeRequest<TType> = {
     type,
     target,
-     
     payload: args[0] as RequestPayload<TType>,
   };
 
@@ -80,7 +79,7 @@ export async function sendMessage<TType extends AppMessageType>(
         }
         return toRuntimeFailure(
           new Error("No active tab available for content message delivery")
-        ) as RuntimeResponse<TType>;
+        );
       }
     }
 
@@ -116,8 +115,7 @@ export async function sendToContentTab<TType extends AppMessageType>(
   request: RuntimeRequest<TType>,
   frameId?: number
 ): Promise<RuntimeResponse<TType> | void> {
-  const tabsOptions =
-    frameId === undefined ? undefined : { frameId };
+  const tabsOptions = frameId === undefined ? undefined : { frameId };
   const expectsResponse = requiresResponse(request.type);
   let attempt = 0;
 
@@ -137,7 +135,7 @@ export async function sendToContentTab<TType extends AppMessageType>(
         if (!expectsResponse) {
           return;
         }
-        return toRuntimeFailure(error) as RuntimeResponse<TType>;
+        return toRuntimeFailure(error);
       }
 
       attempt += 1;
